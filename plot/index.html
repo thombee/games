@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Plot: work out what's planted</title>
-<meta name="description" content="Four garden beds, six vegetables. Work out what's planted in seven guesses. A new plot every day.">
+<meta name="description" content="Four garden beds, six vegetables. Work out what's planted in six guesses. A new plot every day.">
 <meta property="og:title" content="Plot">
 <meta property="og:description" content="Work out what's planted in the four beds. A daily puzzle of pure deduction.">
 <meta property="og:type" content="website">
@@ -53,7 +53,7 @@
   <div class="sheet">
     <button class="close" type="button" data-close aria-label="Close">✕</button>
     <h2 id="help-title">How to play</h2>
-    <p>Four beds hide four vegetables. A vegetable can be in more than one bed. Work it out in seven guesses.</p>
+    <p>Four beds hide four vegetables. A vegetable can be in more than one bed. Work it out in six guesses.</p>
     <p>Tap vegetables to fill the beds, then press Dig. Tap a filled bed to empty it.</p>
     <div class="example" aria-label="An example guess: carrot in bed 1 is right; tomato is planted, but in another bed; corn and pumpkin are not planted.">
       <span class="bed right" aria-hidden="true"><span class="veg">🥕</span><i class="mark">✓</i></span>
@@ -65,10 +65,19 @@
       <li><span class="chip right" aria-hidden="true">✓</span> Green: the carrot is in bed 1</li>
       <li><span class="chip elsewhere" aria-hidden="true">•</span> Yellow: a tomato is planted, in another bed</li>
       <li><span class="chip absent" aria-hidden="true">–</span> Plain: no corn, and no pumpkin</li>
+      <li><span class="chip tick" aria-hidden="true">✓</span> A tick in the tray: planted somewhere</li>
     </ul>
-    <p class="fine">With repeats, each planted vegetable lights up one bed of your guess: two carrots in your guess against one planted gives one mark and one plain bed. Keys: 1 to 6 or C T O E A P place a vegetable, Backspace removes the last, Enter digs.</p>
+    <p>With repeats, each planted vegetable lights up one bed of your guess. If the beds hold 🍅 🥕 🍆 🎃:</p>
+    <div class="example" aria-label="Against tomato, carrot, eggplant, pumpkin, the guess carrot, carrot, corn, capsicum: the first carrot is plain, the second carrot is right, corn and capsicum are plain.">
+      <span class="bed absent" aria-hidden="true"><span class="veg">🥕</span><i class="mark">–</i></span>
+      <span class="bed right" aria-hidden="true"><span class="veg">🥕</span><i class="mark">✓</i></span>
+      <span class="bed absent" aria-hidden="true"><span class="veg">🌽</span><i class="mark">–</i></span>
+      <span class="bed absent" aria-hidden="true"><span class="veg">🫑</span><i class="mark">–</i></span>
+    </div>
+    <p class="fine">Right beds are counted first. The first carrot is plain because the only carrot is already found.</p>
+    <p class="fine">Keys: 1 to 6 or C T O E A P place a vegetable, Backspace removes the last, Enter digs.</p>
     <label class="switch"><input type="checkbox" id="hard"> Hard mode: every guess must fit all the marks so far</label>
-    <p class="fine" id="hard-note" hidden>Hard mode can be switched on before your first guess of the day.</p>
+    <p class="fine" id="hard-note" hidden>Hard mode starts with tomorrow's plot.</p>
     <label class="switch"><input type="checkbox" id="contrast"> High-contrast colours</label>
     <button class="primary" type="button" data-close autofocus>Play</button>
   </div>

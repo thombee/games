@@ -4,7 +4,7 @@
  * Works as a plain <script> in the browser and via require() in Node.
  *
  * The game: four garden beds hide four vegetables, chosen from six, and a vegetable can be
- * in more than one bed. The player has seven guesses. Each bed of a guess is marked the way
+ * in more than one bed. The player has six guesses. Each bed of a guess is marked the way
  * Wordle marks a letter: right (that vegetable is in that bed), elsewhere (it is planted in
  * another bed) or absent (it is not planted, or not as many times as the guess has it).
  */
@@ -12,7 +12,7 @@
   'use strict';
 
   var BEDS = 4;
-  var MAX_GUESSES = 7;
+  var MAX_GUESSES = 6;
   // Day 1, as a local calendar date. It is a Friday.
   var EPOCH = { year: 2026, month: 11, day: 13 };
   // The first days of the schedule never repeat a vegetable, whatever the weekday.

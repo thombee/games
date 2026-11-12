@@ -1,8 +1,8 @@
 /*
- * Plot page. Draws the seven rows of beds and the tray of vegetables, takes guesses, turns
+ * Plot page. Draws the six rows of beds and the tray of vegetables, takes guesses, turns
  * each dug row over bed by bed, and shows the result card at the end. Progress (the guesses
- * dug and the guess being planted) is kept in localStorage. The rules (the day's planting,
- * marking, hard mode, share text, stats) are in logic.js.
+ * dug and the guess being planted) is kept in localStorage, except in preview. The rules
+ * (the day's planting, marking, hard mode, share text, stats) are in logic.js.
  */
 (function () {
   'use strict';
@@ -16,7 +16,8 @@
 
   var root = document.documentElement;
   var forcedDay = parseInt(new URLSearchParams(location.search).get('day'), 10);
-  // Preview mode plays any day and saves nothing. It is on for ?day=N and for preview builds.
+  // Preview mode plays any day and saves nothing, settings included: it starts from the saved
+  // settings and keeps any change in memory. It is on for ?day=N and for preview builds.
   var PREVIEW = root.hasAttribute('data-preview') || forcedDay > 0;
   // Whether the system asks for less motion. Asked each time something would move, so a
   // change to the setting while the page is open counts straight away.
@@ -26,7 +27,7 @@
   // A dug row turns over one bed after another: each bed takes TURN_MS, starting STAGGER_MS after the one before.
   var TURN_MS = 500, STAGGER_MS = 250;
   var MARK_TEXT = { right: '✓', elsewhere: '•', absent: '–' };
-  var WIN_WORDS = ['First dig. Green thumbs!', 'Two digs. Remarkable!', 'Got it in three!', 'Got it in four!', 'Got it in five!', 'Got it in six!', 'Phew, on the last dig!'];
+  var WIN_WORDS = ['First dig. Green thumbs!', 'Two digs. Remarkable!', 'Got it in three!', 'Got it in four!', 'Got it in five!', 'Phew, on the last dig!'];
   var FIRST_HINT = 'Tap four vegetables, then Dig. Green: right bed. Yellow: planted elsewhere.';
 
   function $(id) { return document.getElementById(id); }
@@ -87,15 +88,16 @@
   }
   /*
    * Once a write has failed, what this tab holds in memory is the truth: storage is not read
-   * again, because what it still has is older than this tab's progress.
+   * again, because what it still has is older than this tab's progress. A preview tab never
+   * writes, and never reads again after loading, so its settings are its own.
    */
   var storageFailed = false;
   function save() {
-    if (storageFailed) return;
+    if (PREVIEW || storageFailed) return;
     try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch (e) { storageFailed = true; cannotSave(); }
   }
   // The saved progress as another tab may have left it, or null if storage is not to be read.
-  function reread() { return storageFailed ? null : readStore(); }
+  function reread() { return PREVIEW || storageFailed ? null : readStore(); }
   // Shown once, under the game, when the browser will not keep the player's progress.
   function cannotSave() {
     var note = $('storage-note');
@@ -110,16 +112,20 @@
 
   /*
    * day, persist (false in preview), code (the four planted), guesses (each four vegetable
-   * indices), draft (the guess being planted: four indices or nulls), hard (every guess so
-   * far was dug in hard mode), busy (true while a dug row is turning over).
+   * indices), draft (the guess being planted: four indices or nulls), hard (the day is played
+   * in hard mode: every guess so far fits it, and the next must), busy (true while a dug row
+   * is turning over).
    */
   var S = null;
   var revealTimer = 0;
+  // Another tab saved progress on this day while a row was turning over: taken when it ends.
+  var behind = false;
 
   function today() { return Math.max(1, P.dayNumber()); }
 
   function startGame(day, persist) {
     clearTimeout(revealTimer);
+    behind = false;
     S = { day: day, persist: persist, code: P.dailyCode(day), guesses: [], draft: P.emptyDraft(), hard: store.hard, busy: false };
     var saved = persist && store.game && store.game.day === day ? store.game : null;
     if (saved) {
@@ -152,6 +158,12 @@
     if (!theirs || theirs.day !== S.day || theirs.guesses.length < S.guesses.length) return false;
     return JSON.stringify([theirs.guesses, theirs.draft]) !== JSON.stringify([S.guesses, S.draft]);
   }
+  // If the saved game is this tab's game as it stands, take its hard-mode flag, which another
+  // tab may have changed.
+  function takeSavedHard() {
+    var theirs = store.game;
+    if (S.persist && theirs && theirs.day === S.day && JSON.stringify(theirs.guesses) === JSON.stringify(S.guesses)) S.hard = theirs.hard;
+  }
   /*
    * Called before any change that is saved. Reads the store again first, so what another tab
    * has saved is not overwritten. If another tab has moved on to a later day, this tab's day
@@ -164,6 +176,7 @@
     if (fresh) store = fresh;
     if (store.game && store.game.day > S.day) { startGame(today(), true); return false; }
     if (savedIsNewer()) { startGame(S.day, true); return false; }
+    takeSavedHard();
     return true;
   }
   function canPlant() { return !!S && !S.busy && !done(); }
@@ -211,7 +224,9 @@
       return;
     }
     if (!sync()) return;
-    if (store.hard) {
+    // Until the first guess is dug, the day follows the switch.
+    if (!S.guesses.length) S.hard = store.hard;
+    if (S.hard) {
       var problem = P.hardModeProblem(S.draft, S.guesses, S.code);
       if (problem) {
         var text = 'Hard mode: ' + P.problemText(problem);
@@ -221,7 +236,6 @@
         return;
       }
     }
-    S.hard = S.guesses.length ? S.hard && store.hard : store.hard;
     S.guesses.push(S.draft);
     S.draft = P.emptyDraft();
     var st = status();
@@ -251,6 +265,11 @@
     var finish = function () {
       S.busy = false;
       $('app').removeAttribute('data-busy');
+      // Another tab played on while this row turned over: show its game.
+      if (behind) {
+        behind = false;
+        if (S.persist && savedIsNewer()) { startGame(S.day, true); return; }
+      }
       var st = status();
       announce(i);
       if (st.done) {
@@ -300,17 +319,17 @@
 
   function renderHint() {
     var hint = $('hint'), st = status();
-    if (st.done) { hint.textContent = st.won ? 'Solved in ' + st.used + ' of ' + P.MAX_GUESSES + '.' : 'Not this time: all seven dug.'; return; }
+    if (st.done) { hint.textContent = st.won ? 'Solved in ' + st.used + ' of ' + P.MAX_GUESSES + '.' : 'Not this time: all six dug.'; return; }
     if (!S.guesses.length) { hint.textContent = FIRST_HINT; return; }
     hint.textContent = '';
     hint.appendChild(el('span', {}, [
-      el('b', { text: 'Guess ' + (S.guesses.length + 1) + ' of ' + P.MAX_GUESSES + (store.hard ? ', hard mode' : '') + '.' }),
+      el('b', { text: 'Guess ' + (S.guesses.length + 1) + ' of ' + P.MAX_GUESSES + (S.hard ? ', hard mode' : '') + '.' }),
       ' Tap a bed to empty it.',
     ]));
   }
 
   /*
-   * The seven rows: dug guesses, then the guess being planted, then empty rows. Dug rows
+   * The six rows: dug guesses, then the guess being planted, then empty rows. Dug rows
    * already on screen are kept as they are, so a row still turning over is not interrupted.
    * fresh: a row just dug, to turn over. popped: a bed of the planting row just filled.
    */
@@ -367,7 +386,7 @@
       btn.className = 'veg-btn' + (k ? ' ' + k : '');
       btn.setAttribute('aria-label', VEG[i].name + (k === 'found' ? ', planted somewhere' : k === 'absent' ? ', not planted' : ''));
       var tick = btn.querySelector('.tick');
-      if (k === 'found' && !tick) btn.appendChild(el('i', { class: 'tick', 'aria-hidden': 'true', text: '✓' }));
+      if (k === 'found' && !tick) btn.appendChild(el('i', { class: 'tick', 'aria-hidden': 'true', title: 'planted somewhere', text: '✓' }));
       if (k !== 'found' && tick) tick.remove();
     });
   }
@@ -515,12 +534,14 @@
     if (store.contrast) root.setAttribute('data-contrast', 'high'); else root.removeAttribute('data-contrast');
     $('contrast').checked = store.contrast;
   }
-  // Hard mode can be switched off at any time, but on only before the day's first guess.
+  // The switch shows the setting; the note says when the setting is on but today is not a hard day.
   function applyHard() {
-    var locked = !store.hard && !!S && S.guesses.length > 0 && !done();
     $('hard').checked = store.hard;
-    $('hard').disabled = locked;
-    $('hard-note').hidden = !locked;
+    $('hard-note').hidden = !(store.hard && !!S && !S.hard && S.guesses.length > 0 && !done());
+  }
+  // Whether every guess so far fits the marks of the guesses before it, as hard mode asks.
+  function allFitHard() {
+    return S.guesses.every(function (g, i) { return !P.hardModeProblem(g, S.guesses.slice(0, i), S.code); });
   }
 
   // ---- wiring
@@ -580,19 +601,27 @@
     save();
     applyContrast();
   });
+  /*
+   * Switching hard mode off makes the rest of the day a normal one. Switching it on makes the
+   * day a hard one only if every guess so far fits it; otherwise it starts with tomorrow's
+   * plot. The guesses judged are the saved game's, taken first if another tab is ahead.
+   */
   $('hard').addEventListener('change', function () {
-    var fresh = reread();
-    if (fresh) store = fresh;
-    var on = $('hard').checked;
+    var on = $('hard').checked, later = false;
+    sync();
     store.hard = on;
     if (!done()) {
-      // Before the first guess the day follows the switch; switching off part-way means the day is no longer a hard one.
-      S.hard = S.guesses.length ? S.hard && on : on;
-      if (S.persist && store.game && store.game.day === S.day && !P.status(store.game.guesses, S.code).done) store.game.hard = S.hard;
+      if (on && !allFitHard()) later = true;
+      else S.hard = on;
+      if (S.persist) store.game = gameNow();
     }
     save();
     applyHard();
     renderHint();
+    if (later) {
+      toast("Hard mode starts with tomorrow's plot");
+      $('live').textContent = "Hard mode starts with tomorrow's plot.";
+    }
   });
   $('prev-day').addEventListener('click', function () { if (S.day > 1) startGame(S.day - 1, false); });
   $('next-day').addEventListener('click', function () { startGame(S.day + 1, false); });
@@ -604,14 +633,20 @@
     if (!fresh) return;
     store = fresh;
     applyContrast();
-    if (!S.persist) { applyHard(); return; }
     var theirs = store.game;
     if (theirs && theirs.day > S.day) {
       // Another tab has moved on to a later day: never write over it.
       startGame(today(), true);
     } else if (theirs && theirs.day === S.day) {
-      if (savedIsNewer() && !S.busy) startGame(S.day, true);
-      else { applyHard(); renderHint(); }
+      // While a row is turning over, the update waits for it to finish.
+      if (savedIsNewer()) {
+        if (S.busy) behind = true;
+        else startGame(S.day, true);
+      } else {
+        takeSavedHard();
+        applyHard();
+        renderHint();
+      }
     } else if (!untouched()) {
       // Their copy has no trace of this tab's day (it was on an earlier one): put ours back.
       snapshot();

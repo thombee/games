@@ -18,12 +18,12 @@
   --pt-miss-ink: #1f2418;
   --pt-shadow: 0 1px 2px rgba(31, 36, 24, .06), 0 10px 28px rgba(31, 36, 24, .1);
   --pt-font: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  /* The height of a row of beds: seven rows and the tray fit on a 640px-tall phone. */
-  --pt-row: clamp(40px, calc((100vh - 296px) / 7), 58px);
+  /* The height of a row of beds: six rows and the tray fit on a 640px-tall phone. */
+  --pt-row: clamp(40px, calc((100vh - 296px) / 6), 58px);
   color-scheme: light dark;
 }
 @supports (height: 100svh) {
-  :root { --pt-row: clamp(40px, calc((100svh - 296px) / 7), 58px); }
+  :root { --pt-row: clamp(40px, calc((100svh - 296px) / 6), 58px); }
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -90,7 +90,7 @@ a { color: var(--pt-accent); }
 .preview-bar b { color: var(--pt-ink); min-width: 52px; text-align: center; }
 .preview-bar button { border: 1.5px solid var(--pt-line); background: var(--pt-card); border-radius: 8px; padding: 2px 9px; }
 
-/* ---- the board: seven rows of four beds */
+/* ---- the board: six rows of four beds */
 .hint { margin: 0 auto 8px; max-width: 380px; min-height: 2.8em; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 13.5px; line-height: 1.4; color: var(--pt-muted); font-weight: 600; }
 .hint b { color: var(--pt-ink); }
 .board { display: grid; gap: 6px; max-width: 380px; margin: 0 auto; padding: 0; list-style: none; }
@@ -197,6 +197,8 @@ dialog::backdrop { background: rgba(14, 18, 10, .55); }
 .chip.right { background: var(--pt-right); color: var(--pt-right-ink); }
 .chip.elsewhere { background: var(--pt-near); color: var(--pt-near-ink); }
 .chip.absent { background: var(--pt-miss); color: var(--pt-miss-ink); }
+/* The tray's tick, as it looks on a vegetable button. */
+.chip.tick { width: 18px; height: 18px; margin: 0 2px; border-radius: 50%; font-size: 11px; background: var(--pt-right); color: var(--pt-right-ink); }
 .close { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 50%; border: 0; background: var(--pt-blank); font-weight: 800; }
 .switch { display: flex; align-items: flex-start; gap: 8px; margin-top: 12px; font-size: 14px; font-weight: 600; }
 .switch input { flex: none; width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--pt-accent); }
