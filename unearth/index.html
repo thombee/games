@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Unearth: a daily picture puzzle</title>
+<meta name="description" content="Fill the squares to uncover today's picture. A new garden-and-farmyard picture puzzle every day.">
+<meta property="og:title" content="Unearth">
+<meta property="og:description" content="A daily picture puzzle: fill the squares to uncover today's picture.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#f3efe6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16130f" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🥔%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <button class="icon-btn" id="help-btn" type="button" aria-label="How to play">?</button>
+    <h1 class="logo"><span aria-hidden="true">🥔</span> Un<b>earth</b></h1>
+    <button class="icon-btn" id="stats-btn" type="button" aria-label="Your stats">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 20V11M12 20V4M19 20v-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+    </button>
+  </header>
+  <p class="tagline" id="tagline">Fill the squares to uncover today’s picture.</p>
+
+  <div class="preview-bar" id="preview-bar" hidden>
+    <span>Preview</span>
+    <button type="button" id="prev-day" aria-label="Previous day">◀</button>
+    <b id="preview-day"></b>
+    <button type="button" id="next-day" aria-label="Next day">▶</button>
+    <span>nothing is saved</span>
+  </div>
+  <div class="preview-bar warmup-bar" id="warmup-bar" hidden>
+    <span>A warm-up: it doesn’t count</span>
+    <button type="button" id="warmup-skip">Skip to today’s picture</button>
+  </div>
+
+  <section id="play" aria-labelledby="tagline">
+    <div class="meta">
+      <span id="day-tag"></span>
+      <span class="timer" id="timer" role="timer" aria-label="Time">0:00</span>
+    </div>
+    <div class="board" id="board" role="grid"></div>
+    <p class="reveal" id="reveal" hidden></p>
+    <p class="status" id="status"></p>
+    <div class="controls" id="controls">
+      <div class="mode" id="mode" role="group" aria-label="What a tap does">
+        <button type="button" id="mode-fill" aria-pressed="true"><span class="sw-fill" aria-hidden="true"></span>Fill</button>
+        <button type="button" id="mode-cross" aria-pressed="false"><span class="sw-cross" aria-hidden="true">✕</span>Cross</button>
+      </div>
+      <div class="tools" id="tools">
+        <button class="tool" id="undo-btn" type="button"><span class="ic" aria-hidden="true">↶</span><span class="lb">Undo</span></button>
+        <button class="tool" id="clear-btn" type="button"><span class="ic" aria-hidden="true">⌫</span><span class="lb">Clear</span></button>
+        <button class="tool" id="check-btn" type="button"><span class="ic" aria-hidden="true">✓</span><span class="lb">Check</span></button>
+        <button class="tool" id="hint-btn" type="button"><span class="ic" aria-hidden="true">💡</span><span class="lb">Hint</span></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="results" id="results" hidden></section>
+
+  <p class="notice" id="storage-note" hidden>Your progress can't be saved in this browser.</p>
+  <footer class="foot">A new picture every day at midnight: small on Mondays, biggest at the weekend.</footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="sr-only" id="live" aria-live="polite"></div>
+
+<dialog id="help" aria-labelledby="help-title">
+  <div class="sheet">
+    <button class="close" type="button" data-close aria-label="Close">✕</button>
+    <h2 id="help-title">How to play</h2>
+    <p>A picture is hidden in the grid. The numbers beside each row and above each column are its clues: each number is a run of filled squares, in order, with a gap between runs. So <b>3&nbsp;1</b> means three filled squares, at least one empty one, then one more.</p>
+    <p>Tap a square to fill it. Switch to <b>✕&nbsp;Cross</b> to mark squares you know are empty; crosses are only notes. Drag along a row or column to do several at once. A clue turns green when its line matches it.</p>
+    <p>Every picture can be worked out without guessing. Stuck? <b>Check</b> briefly marks any filled square that’s wrong, and <b>Hint</b> fills in a whole row or column. Both are counted.</p>
+    <p class="fine">Keyboard: arrow keys move, Space fills, X crosses, Delete clears, Ctrl+Z undoes. A new picture arrives at midnight: 5 by 5 on Mondays, up to 10 by 10 at the weekend.</p>
+    <button class="secondary wide" type="button" id="example-btn">Show me an example</button>
+    <label class="switch"><input type="checkbox" id="contrast"> High-contrast colours</label>
+    <button class="primary" type="button" data-close autofocus>Play</button>
+  </div>
+</dialog>
+
+<dialog id="stats" aria-labelledby="stats-title">
+  <div class="sheet">
+    <button class="close" type="button" data-close aria-label="Close">✕</button>
+    <h2 id="stats-title">Your stats</h2>
+    <div id="stats-body"></div>
+  </div>
+</dialog>
+
+<dialog id="example" aria-labelledby="ex-title">
+  <div class="sheet">
+    <h2 id="ex-title">How it works</h2>
+    <p class="ex-step" id="ex-step"></p>
+    <p class="ex-text" id="ex-text" aria-live="polite"></p>
+    <div class="board ex-board" id="ex-board" role="grid" aria-label="Example, 4 by 4"></div>
+    <div class="ex-actions">
+      <button class="secondary" type="button" id="ex-skip">Skip</button>
+      <button class="primary" type="button" id="ex-play" hidden>Back to the game</button>
+    </div>
+  </div>
+</dialog>
+
+<script src="pictures.js"></script>
+<script src="logic.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

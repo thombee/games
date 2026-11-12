@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bolt: how far can today's runaway get?</title>
+<meta name="description" content="A farm animal makes a run for the hills. Tap to jump. Three runs a day, the best one counts.">
+<meta property="og:title" content="Bolt">
+<meta property="og:description" content="How far can today's runaway get? A one-button runner, new every day.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#f7f1e5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16130f" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💨%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <div class="bar-side">
+      <button class="icon-btn" id="help-btn" type="button" aria-label="How to play">?</button>
+    </div>
+    <h1 class="logo"><span aria-hidden="true">💨</span> <b>Bolt</b></h1>
+    <div class="bar-side end">
+      <button class="icon-btn" id="sound-btn" type="button" aria-label="Sound" aria-pressed="true">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path class="sound-on" d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path class="sound-off" d="M15.5 9.5l5 5M20.5 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </button>
+      <button class="icon-btn" id="stats-btn" type="button" aria-label="Your stats">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 20V11M12 20V4M19 20v-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <p class="tagline">How far can today’s runaway get? <span id="day-tag"></span></p>
+
+  <div class="preview-bar" id="preview-bar" hidden>
+    <span>Preview</span>
+    <button type="button" id="prev-day" aria-label="Previous day">◀</button>
+    <b id="preview-day"></b>
+    <button type="button" id="next-day" aria-label="Next day">▶</button>
+    <span>nothing is saved</span>
+  </div>
+
+  <section id="play" aria-label="The run">
+    <div class="stage" id="stage">
+      <canvas id="scene" aria-hidden="true"></canvas>
+      <div class="hud" aria-hidden="true">
+        <div class="who"><span class="who-name" id="who"></span><span class="who-run" id="run-no"></span></div>
+        <div class="dist" id="dist">0 m</div>
+      </div>
+      <div class="banner" id="banner" aria-hidden="true"></div>
+      <div class="jump" id="jump" tabindex="0" role="button" aria-label="Jump" aria-describedby="hint"></div>
+      <p class="hint" id="hint">Tap to jump. Tap again in the air for a second hop.</p>
+      <p class="paused" id="paused" hidden>Paused. Tap to carry on.</p>
+      <p class="count" id="count" aria-hidden="true" hidden></p>
+      <div class="between" id="between" role="group" aria-labelledby="b-what" hidden>
+        <p class="b-what" id="b-what"></p>
+        <p class="b-dist" id="b-dist"></p>
+        <p class="b-best" id="b-best"></p>
+        <div class="b-actions">
+          <button class="primary" id="again-btn" type="button">Run again</button>
+          <button class="secondary" id="stop-btn" type="button">Stop here</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="results" id="results" hidden></section>
+
+  <p class="notice" id="storage-note" hidden>Your progress can't be saved in this browser.</p>
+  <footer class="foot">A new course and a new runaway every day at midnight.</footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="sr-only" id="live" aria-live="polite"></div>
+
+<dialog id="help" aria-labelledby="help-title">
+  <div class="sheet">
+    <button class="close" type="button" data-close aria-label="Close">✕</button>
+    <h2 id="help-title">How to play</h2>
+    <p>Today’s runaway is making a run for the hills. It runs by itself: tap anywhere on the field, or press Space or Enter, to jump. Tap again in the air for a second, smaller hop, for tractors, haystacks and fences in pairs. Under a low branch, keep your feet on the ground.</p>
+    <p>You get three runs a day and your best one counts. One tab plays at a time: while a run is on in another tab, this one waits for it to end. Everyone gets the same course today, and a new course and a new runaway arrive at midnight.</p>
+    <p class="fine">The run itself is a game of quick reactions played by sight, so it can’t be played with a screen reader. Your distances, results and stats are read out.</p>
+    <label class="switch"><input type="checkbox" id="contrast"> High-contrast colours</label>
+    <button class="primary" type="button" data-close autofocus>Play</button>
+  </div>
+</dialog>
+
+<dialog id="stats" aria-labelledby="stats-title">
+  <div class="sheet">
+    <button class="close" type="button" data-close aria-label="Close">✕</button>
+    <h2 id="stats-title">Your stats</h2>
+    <div id="stats-body"></div>
+  </div>
+</dialog>
+
+<script src="logic.js"></script>
+<script src="scene.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

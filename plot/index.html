@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Plot: work out what's planted</title>
+<meta name="description" content="Four garden beds, six vegetables. Work out what's planted in seven guesses. A new plot every day.">
+<meta property="og:title" content="Plot">
+<meta property="og:description" content="Work out what's planted in the four beds. A daily puzzle of pure deduction.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#f3f1e4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12140f" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🥕%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app" id="app">
+  <header class="bar">
+    <button class="icon-btn" id="help-btn" type="button" aria-label="How to play">?</button>
+    <h1 class="logo"><span aria-hidden="true">🥕</span> Pl<b>ot</b></h1>
+    <button class="icon-btn" id="stats-btn" type="button" aria-label="Your stats">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 20V11M12 20V4M19 20v-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+    </button>
+  </header>
+  <p class="tagline">Work out what's planted in the four beds. <span id="day-tag"></span></p>
+
+  <div class="preview-bar" id="preview-bar" hidden>
+    <span>Preview</span>
+    <button type="button" id="prev-day" aria-label="Previous day">◀</button>
+    <b id="preview-day"></b>
+    <button type="button" id="next-day" aria-label="Next day">▶</button>
+    <span>nothing is saved</span>
+  </div>
+
+  <p class="hint" id="hint"></p>
+  <ol class="board" id="board" aria-label="Your guesses"></ol>
+
+  <section class="tray-box" id="tray-box" aria-label="Plant a guess">
+    <div class="tray" id="tray"></div>
+    <button class="primary dig" id="dig" type="button">Dig</button>
+  </section>
+
+  <section class="results" id="results" aria-labelledby="result-title" hidden></section>
+
+  <p class="notice" id="storage-note" hidden>Your progress can't be saved in this browser.</p>
+  <footer class="foot">A new plot every day at midnight. Same beds for everyone.</footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="sr-only" id="live" aria-live="polite"></div>
+
+<dialog id="help" aria-labelledby="help-title">
+  <div class="sheet">
+    <button class="close" type="button" data-close aria-label="Close">✕</button>
+    <h2 id="help-title">How to play</h2>
+    <p>Four beds hide four vegetables. A vegetable can be in more than one bed. Work it out in seven guesses.</p>
+    <p>Tap vegetables to fill the beds, then press Dig. Tap a filled bed to empty it.</p>
+    <div class="example" aria-label="An example guess: carrot in bed 1 is right; tomato is planted, but in another bed; corn and pumpkin are not planted.">
+      <span class="bed right" aria-hidden="true"><span class="veg">🥕</span><i class="mark">✓</i></span>
+      <span class="bed elsewhere" aria-hidden="true"><span class="veg">🍅</span><i class="mark">•</i></span>
+      <span class="bed absent" aria-hidden="true"><span class="veg">🌽</span><i class="mark">–</i></span>
+      <span class="bed absent" aria-hidden="true"><span class="veg">🎃</span><i class="mark">–</i></span>
+    </div>
+    <ul class="key">
+      <li><span class="chip right" aria-hidden="true">✓</span> Green: the carrot is in bed 1</li>
+      <li><span class="chip elsewhere" aria-hidden="true">•</span> Yellow: a tomato is planted, in another bed</li>
+      <li><span class="chip absent" aria-hidden="true">–</span> Plain: no corn, and no pumpkin</li>
+    </ul>
+    <p class="fine">With repeats, each planted vegetable lights up one bed of your guess: two carrots in your guess against one planted gives one mark and one plain bed. Keys: 1 to 6 or C T O E A P place a vegetable, Backspace removes the last, Enter digs.</p>
+    <label class="switch"><input type="checkbox" id="hard"> Hard mode: every guess must fit all the marks so far</label>
+    <p class="fine" id="hard-note" hidden>Hard mode can be switched on before your first guess of the day.</p>
+    <label class="switch"><input type="checkbox" id="contrast"> High-contrast colours</label>
+    <button class="primary" type="button" data-close autofocus>Play</button>
+  </div>
+</dialog>
+
+<dialog id="stats" aria-labelledby="stats-title">
+  <div class="sheet">
+    <button class="close" type="button" data-close aria-label="Close">✕</button>
+    <h2 id="stats-title">Your stats</h2>
+    <div id="stats-body"></div>
+  </div>
+</dialog>
+
+<script src="logic.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

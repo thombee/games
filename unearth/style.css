@@ -1,0 +1,286 @@
+/* Unearth. Custom properties are prefixed ue- so a host page's own variables cannot collide. */
+:root {
+  --ue-bg: #f3efe6;
+  --ue-ink: #24201c;
+  --ue-muted: #665d53;
+  --ue-card: #fffdf8;
+  --ue-line: #ded6c8;
+  --ue-blank: #ebe5d9;
+  --ue-accent: #8f2c5c;
+  --ue-accent-ink: #fff;
+  /* A clue whose line matches it keeps the text colour and sits on a green tint; done-hl is
+     the tint when that clue is also picked out for the square in focus. */
+  --ue-done-bg: #c8e2ae;
+  --ue-done-hl: #acd38b;
+  /* The clues once the picture is solved, faded. */
+  --ue-spent: #8f8579;
+  /* The board. Its squares stay light in every mode, so the marks on them look the same everywhere. */
+  --ue-paper: #fbf5e6;
+  --ue-fill: #2b2622;
+  --ue-cross: #6b6156;
+  --ue-frame: #2b2622;
+  --ue-grid: rgba(43, 38, 34, .2);
+  --ue-wrong: #c0392b;
+  --ue-wrong-ink: #fff;
+  --ue-hl: #e9dcc0;
+  /* The focus ring and highlights on the board, which stays light in every mode. */
+  --ue-ring: #8f2c5c;
+  --ue-shadow: 0 1px 2px rgba(36, 32, 28, .06), 0 10px 28px rgba(36, 32, 28, .1);
+  --ue-font: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ue-bg: #16130f;
+    --ue-ink: #efe9df;
+    --ue-muted: #a89d8e;
+    --ue-card: #211c17;
+    --ue-line: #3a3229;
+    --ue-blank: #2b251e;
+    --ue-accent: #f08cb8;
+    --ue-accent-ink: #2a0716;
+    --ue-done-bg: #2a3f1e;
+    --ue-done-hl: #3b5728;
+    --ue-spent: #6c6358;
+    --ue-paper: #ece4d3;
+    --ue-hl: #3d3326;
+    --ue-shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 28px rgba(0, 0, 0, .4);
+  }
+}
+/* High contrast: stronger grid lines and crosses, matched clues framed as well as tinted. */
+:root[data-contrast="high"] {
+  --ue-grid: rgba(43, 38, 34, .45);
+  --ue-cross: #2b2622;
+  --ue-wrong: #d35400;
+  --ue-wrong-ink: #1a0a00;
+  --ue-fill: #000000;
+  --ue-spent: #8a8073;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-contrast="high"] {
+    --ue-spent: #8f8578;
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--ue-bg);
+  color: var(--ue-ink);
+  font-family: var(--ue-font);
+  line-height: 1.4;
+  -webkit-tap-highlight-color: transparent;
+}
+.app { max-width: 500px; margin: 0 auto; padding: 10px 14px 28px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+a { color: var(--ue-accent); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---- header */
+.bar { display: grid; grid-template-columns: 40px 1fr 40px; align-items: center; }
+.logo { margin: 0; text-align: center; font-size: 27px; font-weight: 800; letter-spacing: -.02em; }
+.logo b { color: var(--ue-accent); font-weight: 800; }
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--ue-line); background: var(--ue-card);
+  font-weight: 800; font-size: 17px; display: grid; place-items: center; padding: 0;
+}
+.icon-btn:hover { border-color: var(--ue-accent); }
+.tagline { margin: 2px 0 12px; text-align: center; color: var(--ue-muted); font-size: 15px; font-weight: 600; text-wrap: balance; }
+
+.preview-bar {
+  display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 0 12px; padding: 6px 10px;
+  border: 1.5px dashed var(--ue-line); border-radius: 12px; font-size: 13px; color: var(--ue-muted);
+}
+.preview-bar[hidden] { display: none; }
+.preview-bar b { color: var(--ue-ink); min-width: 48px; text-align: center; }
+.preview-bar button { border: 1.5px solid var(--ue-line); background: var(--ue-card); border-radius: 8px; padding: 2px 9px; }
+
+/* ---- the day and the clock */
+#play[hidden] { display: none; }
+.meta { display: flex; justify-content: space-between; align-items: baseline; margin: 0 2px 8px; font-size: 14px; color: var(--ue-muted); font-weight: 600; }
+#day-tag b { color: var(--ue-ink); }
+.timer { font-variant-numeric: tabular-nums; font-weight: 800; color: var(--ue-ink); font-size: 16px; }
+.timer::before { content: "⏱ "; font-size: 13px; }
+
+/* ---- the board: a corner, a row of column clues, then each row's clue and squares. The rows
+   are there for screen readers and take no part in the layout. */
+.board {
+  --n: 5;
+  position: relative; container-type: inline-size; margin: 0 auto;
+  display: grid; grid-template-columns: auto repeat(var(--n), minmax(0, 1fr));
+  touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+}
+.board.n5 { max-width: 330px; }
+.board.n8 { max-width: 430px; }
+.row { display: contents; }
+.clue { font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.12; color: var(--ue-ink); border-radius: 6px; }
+.col-clue { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding: 2px 0 6px; }
+.row-clue { display: flex; justify-content: flex-end; align-items: center; gap: .42em; padding: 0 7px 0 2px; white-space: nowrap; }
+.board.n4 .clue, .board.n5 .clue { font-size: 19px; }
+.board.n8 .clue { font-size: 15px; }
+.board.n10 .clue { font-size: 14px; }
+/* A matched clue stays as readable as any other: it is marked by a tint behind it. */
+.clue.done { background: var(--ue-done-bg); }
+.clue.cur { background: var(--ue-hl); }
+.clue.done.cur { background: var(--ue-done-hl); }
+:root[data-contrast="high"] .clue.done { box-shadow: inset 0 0 0 2px var(--ue-ink); }
+
+.cell {
+  --t: 0px; --r: 0px; --b: 0px; --l: 0px;
+  position: relative; aspect-ratio: 1; min-width: 0; background: var(--ue-paper); cursor: pointer; outline: none;
+  box-shadow: inset 0 var(--t) 0 var(--ue-frame), inset calc(-1 * var(--r)) 0 0 var(--ue-frame),
+    inset 0 calc(-1 * var(--b)) 0 var(--ue-frame), inset var(--l) 0 0 var(--ue-frame), inset 0 0 0 .5px var(--ue-grid);
+}
+/* The outer frame, and a heavier line every 5 squares (every 4 on an 8 by 8 grid). */
+.cell.et { --t: 2.5px; }
+.cell.er { --r: 2.5px; }
+.cell.eb { --b: 2.5px; }
+.cell.el { --l: 2.5px; }
+.cell.sr { --r: 1.5px; }
+.cell.sb { --b: 1.5px; }
+.cell.f { background-color: var(--ue-fill); }
+/* A cross is drawn, so it scales with the square. */
+.cell.x::before {
+  content: ""; position: absolute; inset: 27%;
+  background: linear-gradient(45deg, transparent 42%, var(--ue-cross) 42% 58%, transparent 58%),
+    linear-gradient(-45deg, transparent 42%, var(--ue-cross) 42% 58%, transparent 58%);
+}
+.cell:focus-visible { outline: 3px solid var(--ue-ring); outline-offset: -3px; z-index: 2; }
+/* After Check: a wrong square turns red and shows "!", so colour is not the only sign. */
+.cell.wrong { background-color: var(--ue-wrong); }
+.cell.wrong::after {
+  content: "!"; position: absolute; inset: 0; display: grid; place-items: center;
+  color: var(--ue-wrong-ink); font-weight: 900; font-size: calc(48cqw / var(--n)); line-height: 1;
+}
+.cell.hinted { animation: ue-hint 1s ease-out; }
+
+/* Solved: the grid lines go, every square takes the picture's colours, and the crosses fade. */
+.board.done .cell { cursor: default; background-color: var(--c); box-shadow: none; }
+.board.done .cell.x::before { opacity: 0; }
+.board.done.animate .cell { transition: background-color .35s ease, box-shadow .35s ease; transition-delay: calc(var(--k) * 40ms); }
+.board.done.animate .cell.x::before { transition: opacity .3s ease; }
+.board.done .clue { color: var(--ue-spent); background: none; box-shadow: none; }
+.reveal { margin: 12px 0 0; text-align: center; font-size: 24px; font-weight: 800; letter-spacing: -.01em; }
+.reveal[hidden] { display: none; }
+.reveal.animate { animation: ue-pop .55s cubic-bezier(.3, 1.5, .5, 1) both; animation-delay: var(--after, 0s); }
+
+@keyframes ue-hint { 0% { outline: 3px solid var(--ue-ring); outline-offset: -3px; } 100% { outline: 3px solid transparent; outline-offset: -3px; } }
+@keyframes ue-pop { 0% { opacity: 0; transform: scale(.6); } 100% { opacity: 1; transform: none; } }
+@keyframes ue-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes ue-pulse { 0%, 100% { outline-color: transparent; } 50% { outline-color: var(--ue-ring); } }
+
+.status { margin: 10px 0 0; min-height: 21px; text-wrap: balance; text-align: center; font-size: 14px; font-weight: 600; color: var(--ue-muted); }
+.status.say { color: var(--ue-ink); }
+
+/* ---- the Fill / Cross switch and the tools */
+.controls[hidden] { display: none; }
+.mode {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin: 10px auto 0; max-width: 300px; padding: 4px;
+  background: var(--ue-blank); border-radius: 999px;
+}
+.mode button {
+  display: flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 10px; border: 0; border-radius: 999px;
+  background: transparent; font-size: 15px; font-weight: 800; color: var(--ue-muted);
+}
+.mode button[aria-pressed="true"] { background: var(--ue-card); color: var(--ue-ink); box-shadow: inset 0 0 0 2.5px var(--ue-accent), 0 1px 3px rgba(0, 0, 0, .15); }
+/* A solid square for Fill, in the text colour like the ✕ for Cross. */
+.sw-fill { width: 14px; height: 14px; border-radius: 3px; background: currentColor; }
+.sw-cross { font-size: 15px; line-height: 1; }
+.tools { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+.tool {
+  display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 8px 2px 7px; min-width: 0;
+  border-radius: 14px; border: 1.5px solid var(--ue-line); background: var(--ue-card); font-size: 14px; font-weight: 700; white-space: nowrap;
+}
+.tool .ic { font-size: 17px; line-height: 1.2; }
+.tool:hover:not(:disabled) { border-color: var(--ue-accent); }
+.tool:disabled { opacity: .45; cursor: default; }
+
+.primary { width: 100%; padding: 13px 16px; border: 0; border-radius: 14px; background: var(--ue-accent); color: var(--ue-accent-ink); font-size: 16px; font-weight: 800; }
+.primary[hidden] { display: none; }
+.primary:hover { filter: brightness(1.06); }
+.secondary { padding: 13px 16px; border-radius: 14px; border: 1.5px solid var(--ue-line); background: transparent; font-weight: 700; }
+.secondary.wide { width: 100%; margin-top: 4px; }
+
+/* ---- results */
+.results { margin-top: 14px; padding: 18px 16px; background: var(--ue-card); border: 1.5px solid var(--ue-line); border-radius: 18px; box-shadow: var(--ue-shadow); animation: ue-fade .4s ease both; }
+.results[hidden] { display: none; }
+.score-head { display: flex; align-items: center; gap: 14px; }
+.score { font-size: 46px; font-weight: 800; line-height: 1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.score-title { margin: 0; font-size: 22px; line-height: 1.15; }
+.score-sub { margin: 2px 0 0; font-size: 14px; color: var(--ue-muted); }
+.actions { display: flex; gap: 8px; margin-top: 16px; }
+.actions .primary { flex: 1; width: auto; }
+.share-text { margin: 12px 0 0; padding: 10px 12px; border-radius: 12px; border: 1.5px dashed var(--ue-line); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 14px; line-height: 1.25; white-space: pre-wrap; user-select: all; -webkit-user-select: all; }
+.share-text[hidden] { display: none; }
+.streak { margin: 14px 0 -6px; text-align: center; font-weight: 800; }
+.next { margin: 14px 0 0; text-align: center; font-size: 14px; color: var(--ue-muted); }
+.next b { color: var(--ue-ink); font-variant-numeric: tabular-nums; }
+.next button { margin-left: 6px; }
+.chip-btn { border: 1.5px solid var(--ue-line); background: var(--ue-card); border-radius: 999px; padding: 4px 12px; font-size: 13px; font-weight: 700; }
+.sheet h3 { margin: 20px 0 8px; font-size: 13px; letter-spacing: .05em; text-transform: uppercase; color: var(--ue-muted); }
+.notice { margin: 14px 0 0; text-align: center; font-size: 13px; color: var(--ue-muted); }
+.notice[hidden] { display: none; }
+.foot { margin-top: 22px; text-align: center; font-size: 12px; color: var(--ue-muted); }
+
+/* ---- toast */
+.toast {
+  position: fixed; left: 50%; top: 18px; z-index: 50; transform: translate(-50%, -160%); opacity: 0;
+  padding: 10px 16px; border-radius: 999px; background: var(--ue-ink); color: var(--ue-bg); font-weight: 700; font-size: 14px;
+  transition: transform .25s ease, opacity .25s ease; pointer-events: none; max-width: calc(100% - 32px); text-align: center;
+}
+.toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+/* ---- dialogs */
+dialog { width: min(440px, calc(100% - 24px)); max-height: calc(100% - 24px); padding: 0; border: 0; border-radius: 20px; background: var(--ue-card); color: var(--ue-ink); box-shadow: var(--ue-shadow); }
+dialog::backdrop { background: rgba(20, 14, 8, .55); }
+.sheet { position: relative; padding: 20px 18px 18px; }
+.sheet h2 { margin: 0 0 8px; font-size: 22px; }
+.sheet p { margin: 10px 0; font-size: 15px; }
+.sheet .fine { font-size: 13px; color: var(--ue-muted); }
+.sheet .primary { margin-top: 12px; }
+.close { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 50%; border: 0; background: var(--ue-blank); font-weight: 800; }
+.switch { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 14px; font-weight: 600; }
+.switch input { width: 18px; height: 18px; accent-color: var(--ue-accent); }
+.nums { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 12px 0 4px; text-align: center; }
+.nums b { display: block; font-size: 26px; font-variant-numeric: tabular-nums; }
+.nums span { font-size: 12px; color: var(--ue-muted); font-weight: 600; }
+.times { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+.times th, .times td { padding: 7px 4px; text-align: right; border-top: 1.5px solid var(--ue-line); }
+.times th:first-child, .times td:first-child { text-align: left; }
+.times thead th { border-top: 0; font-size: 12px; color: var(--ue-muted); font-weight: 700; }
+.times tr.today td { font-weight: 800; }
+/* The album: every daily picture uncovered, in its colours, then blanks for the next few. */
+.sheet .album-count { margin: 0 0 8px; font-size: 14px; color: var(--ue-muted); }
+.album-count b { color: var(--ue-ink); }
+.album { display: grid; grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
+.album li { aspect-ratio: 1; border-radius: 6px; overflow: hidden; }
+.album svg { display: block; width: 100%; height: 100%; }
+.album li.blank { border: 1.5px dashed var(--ue-line); background: var(--ue-blank); }
+
+/* ---- the guided example */
+.sheet .ex-step { margin: 0 0 4px; font-size: 13px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--ue-accent); }
+.sheet .ex-text { min-height: 4.2em; margin: 0 0 12px; font-weight: 600; text-wrap: pretty; }
+.ex-board { max-width: 250px; }
+.ex-board .cell.target { outline: 3px solid var(--ue-ring); outline-offset: -6px; animation: ue-pulse 1.3s ease-in-out infinite; }
+.ex-board .cell.lit { background-color: var(--ue-hl); }
+.ex-board .cell.lit.f { background-color: var(--ue-fill); }
+.ex-actions { display: flex; gap: 8px; margin-top: 14px; }
+.ex-actions .secondary { flex: 1; }
+.ex-actions .primary { flex: 2; margin-top: 0; }
+
+@media (max-width: 380px) {
+  .app { padding-left: 10px; padding-right: 10px; }
+  .tagline { font-size: 14px; }
+  .board.n10 .clue { font-size: 12.5px; }
+  .board.n10 .row-clue { gap: .36em; padding-right: 5px; }
+  .tool { font-size: 13px; }
+  .score { font-size: 40px; }
+}
+@media (min-width: 700px) {
+  .app { padding-top: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .results, .reveal.animate, .cell.hinted, .ex-board .cell.target { animation: none; }
+  .board.done.animate .cell, .board.done.animate .cell.x::before, .toast { transition: none; }
+}

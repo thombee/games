@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Grow: merge plants, grow a garden</title>
+<meta name="description" content="Merge matching plants to grow them. Eighty moves, three rounds a day, the best one counts.">
+<meta property="og:title" content="Grow">
+<meta property="og:description" content="Merge matching plants to grow them. A new garden every day.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#f4f1e8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121510" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🪴%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <button class="icon-btn" id="help-btn" type="button" aria-label="How to play">?</button>
+    <h1 class="logo"><span aria-hidden="true">🪴</span> <b>Grow</b></h1>
+    <button class="icon-btn" id="stats-btn" type="button" aria-label="Your stats">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 20V11M12 20V4M19 20v-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+    </button>
+  </header>
+  <p class="tagline">Merge matching plants to grow them. <span id="moves-tag"></span> <span id="day-tag"></span></p>
+
+  <div class="preview-bar" id="preview-bar" hidden>
+    <span>Preview</span>
+    <button type="button" id="prev-day" aria-label="Previous day">◀</button>
+    <b id="preview-day"></b>
+    <button type="button" id="next-day" aria-label="Next day">▶</button>
+    <span>nothing is saved</span>
+  </div>
+
+  <section id="play" aria-label="The garden">
+    <div class="hud">
+      <div class="score-box" aria-live="off">
+        <span class="hud-label">Score</span>
+        <b id="score">0</b>
+        <span class="floats" id="floats" aria-hidden="true"></span>
+      </div>
+      <div class="round-no" id="round-no"></div>
+    </div>
+    <div class="moves" id="moves">
+      <div class="moves-track" aria-hidden="true"><i id="moves-fill"></i></div>
+      <span class="moves-text" id="moves-left"></span>
+    </div>
+
+    <div class="bed" id="bed" tabindex="0" aria-describedby="bed-help">
+      <div class="grid" id="grid" role="grid" aria-label="Garden bed, four rows of four"></div>
+      <div class="tiles" id="tiles" aria-hidden="true"></div>
+      <div class="banner" id="banner" aria-hidden="true"></div>
+      <div class="between" id="between" role="group" aria-labelledby="b-what" hidden>
+        <p class="b-what" id="b-what"></p>
+        <p class="b-score" id="b-score"></p>
+        <p class="b-plant" id="b-plant"></p>
+        <p class="b-tidy" id="b-tidy" hidden></p>
+        <p class="b-best" id="b-best"></p>
+        <p class="b-same">Same garden each time. Find a better line.</p>
+        <div class="b-actions">
+          <button class="primary" id="again-btn" type="button">Go again</button>
+          <button class="secondary" id="stop-btn" type="button">Stop here</button>
+        </div>
+      </div>
+    </div>
+    <p class="sr-only" id="bed-help">Use the arrow keys, or the arrow buttons after the garden, to slide every plant one way.</p>
+
+    <p class="hint" id="hint" hidden></p>
+    <div class="pad" id="pad" role="group" aria-label="Slide the plants">
+      <button type="button" data-dir="U" aria-label="Slide up">▲</button>
+      <button type="button" data-dir="L" aria-label="Slide left">◀</button>
+      <button type="button" data-dir="D" aria-label="Slide down">▼</button>
+      <button type="button" data-dir="R" aria-label="Slide right">▶</button>
+    </div>
+    <ol class="ladder" id="ladder" aria-hidden="true"></ol>
+    <p class="sr-only" id="ladder-text"></p>
+  </section>
+
+  <section class="results" id="results" hidden></section>
+
+  <p class="notice" id="storage-note" hidden>Your progress can't be saved in this browser.</p>
+  <footer class="foot">A new garden every day at midnight.</footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="sr-only" id="live" aria-live="polite"></div>
+
+<dialog id="help" aria-labelledby="help-title">
+  <div class="sheet">
+    <button class="close" type="button" data-close aria-label="Close">✕</button>
+    <h2 id="help-title">How to play</h2>
+    <p>Swipe the garden, or press an arrow key, and every plant slides that way as far as it can. Two of the same that meet merge and grow into the next stage:</p>
+    <p class="chain" id="chain"></p>
+    <p>You get <span id="help-moves">80</span> moves a round. After each one a seed, or sometimes a sprout, comes up. Bigger plants score more, and each square left empty at the end of a round scores <span id="help-tidy">20</span>. If the bed fills up and nothing can merge, the round ends early.</p>
+    <p>Three rounds a day; your best counts. Everyone gets the same garden today, and a new one comes up at midnight.</p>
+    <label class="switch"><input type="checkbox" id="contrast"> High-contrast colours</label>
+    <label class="switch"><input type="checkbox" id="pad-on"> Show arrow buttons</label>
+    <button class="primary" type="button" data-close autofocus>Play</button>
+  </div>
+</dialog>
+
+<dialog id="stats" aria-labelledby="stats-title">
+  <div class="sheet">
+    <button class="close" type="button" data-close aria-label="Close">✕</button>
+    <h2 id="stats-title">Your stats</h2>
+    <div id="stats-body"></div>
+  </div>
+</dialog>
+
+<script src="logic.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

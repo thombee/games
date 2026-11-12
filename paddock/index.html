@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Paddock: pop in and see who's about</title>
+<meta name="description" content="A small paddock of animals who are pleased to see you. Pop in once a day, see what mood they're in, and offer each one something.">
+<meta property="og:title" content="Paddock">
+<meta property="og:description" content="Pop in and see who's about. A thirty-second daily visit to a few animals with names, moods and likes.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#f6f1e4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17130f" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌼%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <button class="icon-btn" id="help-btn" type="button" aria-label="Help and your save">?</button>
+    <h1 class="logo"><span aria-hidden="true">🌼</span> Pad<b>dock</b></h1>
+    <button class="icon-btn" id="book-btn" type="button" aria-label="Your book"><span aria-hidden="true">📖</span></button>
+  </header>
+  <p class="tagline">Pop in and see who's about. <span id="day-tag"></span></p>
+
+  <div class="preview-bar" id="preview-bar" hidden>
+    <span>Preview</span>
+    <button type="button" id="prev-day" aria-label="Previous day">◀</button>
+    <b id="preview-day"></b>
+    <button type="button" id="next-day" aria-label="Next day">▶</button>
+    <span>nothing is saved</span>
+  </div>
+
+  <p class="arrival" id="arrival" hidden></p>
+  <p class="hint" id="hint"></p>
+
+  <section class="paddock" id="paddock" data-time="morning" aria-label="The paddock">
+    <div class="land" aria-hidden="true">
+      <span class="sun"></span>
+      <span class="cloud c1">☁️</span><span class="cloud c2">☁️</span>
+      <span class="hill h1"></span><span class="hill h2"></span>
+      <span class="tree">🌳</span>
+      <span class="fence"></span>
+      <span class="tuft t1">🌱</span><span class="tuft t2">🌼</span><span class="tuft t3">🌱</span>
+    </div>
+    <ul class="herd" id="herd"></ul>
+  </section>
+
+  <section class="closing" id="closing" hidden aria-labelledby="closing-title"></section>
+
+  <p class="notice" id="storage-note" hidden></p>
+  <footer class="foot">The cards in your book are true, each with its source.</footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="sr-only" id="live" aria-live="polite"></div>
+
+<dialog id="visit" aria-labelledby="visit-name">
+  <div class="sheet visit-sheet">
+    <button class="close" type="button" data-close aria-label="Back to the paddock">✕</button>
+    <div class="visit-head">
+      <span class="v-critter" id="visit-critter" aria-hidden="true"></span>
+      <div class="v-who">
+        <h2 id="visit-name"></h2>
+        <p class="v-mood" id="visit-mood"></p>
+      </div>
+    </div>
+    <div class="friend" id="visit-friend"></div>
+    <div id="visit-body"></div>
+  </div>
+</dialog>
+
+<dialog id="book" aria-labelledby="book-title">
+  <div class="sheet">
+    <button class="close" type="button" data-close aria-label="Close">✕</button>
+    <h2 id="book-title">Your book</h2>
+    <div id="book-body"></div>
+  </div>
+</dialog>
+
+<dialog id="help" aria-labelledby="help-title">
+  <div class="sheet">
+    <button class="close" type="button" data-close aria-label="Close">✕</button>
+    <h2 id="help-title">How it works</h2>
+    <p>Pop in once a day. Tap each animal and offer it one of three things.</p>
+    <p>What they love depends on their mood, and each has tastes of its own. Two hearts for a favourite, one for something they like.</p>
+    <p>Hearts make friends. Each new level of friendship adds a card to your book, and as your friendships grow, someone new turns up at the gate.</p>
+    <p class="fine">Moods change at midnight and are the same for everyone, so you can compare notes with friends. Missing a day only costs your streak.</p>
+    <h3>Your save</h3>
+    <p class="fine">Your paddock lives in this browser. To move it to another device, copy your save here and paste it there.</p>
+    <div class="save-row">
+      <button class="secondary" type="button" id="copy-save">Copy my save</button>
+    </div>
+    <label class="paste-label" for="paste-box">Paste a save</label>
+    <textarea id="paste-box" rows="3" spellcheck="false" autocomplete="off" placeholder="PADDOCK1:…"></textarea>
+    <button class="secondary" type="button" id="load-save">Load this save</button>
+    <p class="fine" id="save-msg" role="status"></p>
+    <button class="primary" type="button" data-close>Back to the paddock</button>
+  </div>
+</dialog>
+
+<script src="animals.js"></script>
+<script src="facts.js"></script>
+<script src="logic.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

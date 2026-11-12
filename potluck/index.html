@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Potluck: guess the dish from its ingredients</title>
+<meta name="description" content="One dish a day. Its ingredients appear one at a time. Name it in six goes.">
+<meta property="og:title" content="Potluck">
+<meta property="og:description" content="Guess the dish from its ingredients. A new one every day.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#f8f1e7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16110e" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🥘%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <button class="icon-btn" id="help-btn" type="button" aria-label="How to play">?</button>
+    <h1 class="logo"><span aria-hidden="true">🥘</span> Pot<b>luck</b></h1>
+    <button class="icon-btn" id="stats-btn" type="button" aria-label="Your stats">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 20V11M12 20V4M19 20v-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+    </button>
+  </header>
+  <p class="tagline">Guess the dish from its ingredients. <span id="day-tag"></span></p>
+
+  <div class="preview-bar" id="preview-bar" hidden>
+    <span>Preview</span>
+    <button type="button" id="prev-day" aria-label="Previous day">◀</button>
+    <b id="preview-day"></b>
+    <button type="button" id="next-day" aria-label="Next day">▶</button>
+    <span>nothing is saved</span>
+  </div>
+
+  <section class="recipe" id="recipe" aria-labelledby="recipe-title">
+    <div class="recipe-head">
+      <span class="recipe-emoji" id="recipe-emoji" aria-hidden="true">🍽️</span>
+      <div>
+        <h2 id="recipe-title">What's cooking?</h2>
+        <p class="recipe-sub" id="recipe-sub">Today's mystery dish</p>
+      </div>
+    </div>
+    <p class="recipe-how">Least telling ingredient first. Each miss adds another.</p>
+    <ol class="slots" id="slots" aria-label="Ingredients"></ol>
+    <p class="region" id="region"></p>
+  </section>
+
+  <section class="entry" id="entry" aria-label="Make a guess">
+    <div class="entry-row">
+      <div class="combo">
+        <input id="guess" type="text" role="combobox" aria-expanded="false" aria-controls="options" aria-autocomplete="list"
+          aria-label="Guess the dish" aria-describedby="count" placeholder="Name the dish…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
+        <ul id="options" role="listbox" aria-label="Dishes" hidden></ul>
+      </div>
+      <button class="secondary skip" id="skip" type="button">Skip</button>
+    </div>
+    <p class="count" id="count"></p>
+  </section>
+
+  <ol class="guesses" id="guesses" aria-label="Your guesses"></ol>
+
+  <section class="results" id="results" aria-labelledby="result-name" hidden></section>
+
+  <p class="notice" id="storage-note" hidden>Your progress can't be saved in this browser.</p>
+  <footer class="foot">A new dish every day at midnight. Recipes vary from kitchen to kitchen.</footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="sr-only" id="live" aria-live="polite"></div>
+
+<dialog id="help" aria-labelledby="help-title">
+  <div class="sheet">
+    <button class="close" type="button" data-close aria-label="Close">✕</button>
+    <h2 id="help-title">How to play</h2>
+    <p>Work out today's dish from its ingredients. You start with one.</p>
+    <p>Type a dish and pick it from the list, or press Skip. Each wrong guess or skip shows the next ingredient, and from the fourth the card also says which part of the world the dish comes from. You have six goes.</p>
+    <ul class="key">
+      <li><span class="chip g-correct" aria-hidden="true">🟩</span> The dish: you got it</li>
+      <li><span class="chip g-region" aria-hidden="true">🟨</span> Wrong dish, but from the right part of the world</li>
+      <li><span class="chip g-wrong" aria-hidden="true">⬜</span> Wrong dish, from somewhere else</li>
+      <li><span class="chip g-skip" aria-hidden="true">⬛</span> Skipped</li>
+    </ul>
+    <p class="fine">Everyone gets the same dish, and a new one arrives at midnight.</p>
+    <label class="switch"><input type="checkbox" id="contrast"> High-contrast colours</label>
+    <button class="primary" type="button" data-close autofocus>Play</button>
+  </div>
+</dialog>
+
+<dialog id="stats" aria-labelledby="stats-title">
+  <div class="sheet">
+    <button class="close" type="button" data-close aria-label="Close">✕</button>
+    <h2 id="stats-title">Your stats</h2>
+    <div id="stats-body"></div>
+  </div>
+</dialog>
+
+<script src="dishes.js"></script>
+<script src="logic.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

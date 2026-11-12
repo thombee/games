@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Four Up: find the winning move</title>
+<meta name="description" content="A daily four-in-a-row puzzle. You play Yellow: find the move that wins.">
+<meta property="og:title" content="Four Up">
+<meta property="og:description" content="Find the winning move. A daily four-in-a-row puzzle.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#f3f1ea" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e121c" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🟡%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <button class="icon-btn" id="help-btn" type="button" aria-label="How to play">?</button>
+    <h1 class="logo"><span aria-hidden="true">🟡</span> Four <b>Up</b></h1>
+    <button class="icon-btn" id="stats-btn" type="button" aria-label="Your stats">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 20V11M12 20V4M19 20v-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+    </button>
+  </header>
+  <p class="tagline">Find the winning move. <span id="day-tag"></span></p>
+
+  <div class="preview-bar" id="preview-bar" hidden>
+    <span>Preview</span>
+    <button type="button" id="prev-day" aria-label="Previous day">◀</button>
+    <b id="preview-day"></b>
+    <button type="button" id="next-day" aria-label="Next day">▶</button>
+    <span>nothing is saved</span>
+  </div>
+
+  <section id="play" aria-labelledby="task">
+    <div class="task-row">
+      <div>
+        <h2 class="task" id="task"></h2>
+        <p class="sub" id="sub"></p>
+      </div>
+      <div class="tries-box"><ol class="tries" id="tries" aria-label="Tries"></ol><span aria-hidden="true">tries</span></div>
+    </div>
+    <div class="rack" id="rack">
+      <div class="ghosts" id="ghosts" aria-hidden="true"></div>
+      <div class="board" id="board" role="group" aria-label="The board. Arrow keys choose a column, Enter drops a disc."></div>
+    </div>
+    <p class="status" id="status"></p>
+    <div class="replay" id="replay" hidden>
+      <button class="step" type="button" id="replay-back" aria-label="Previous move">◀</button>
+      <p id="replay-text"></p>
+      <button class="step" type="button" id="replay-next" aria-label="Next move">▶</button>
+    </div>
+  </section>
+
+  <section class="results" id="results" hidden></section>
+
+  <p class="notice" id="storage-note" hidden>Your progress can't be saved in this browser.</p>
+  <footer class="foot">A new puzzle every day at midnight. Quick ones early in the week, longer at the weekend.</footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="sr-only" id="live" aria-live="polite"></div>
+
+<dialog id="help" aria-labelledby="help-title">
+  <div class="sheet">
+    <button class="close" type="button" data-close aria-label="Close">✕</button>
+    <h2 id="help-title">How to play</h2>
+    <p>You play <b>Yellow</b>. Tap a column to drop a disc in it. Red plays back.</p>
+    <p>Get four in a row (across, up or diagonally) within the number of moves shown, whatever Red does. Only one first move does it.</p>
+    <p>If a move lets the win slip, Red shows how it escapes and the board goes back to the start. You get three tries.</p>
+    <p class="fine">One puzzle a day, the same for everyone. Monday and Tuesday are win in 1, Wednesday to Friday win in 2, the weekend win in 3. On a keyboard, the arrow keys choose a column and Enter drops the disc. Yellow discs carry a ring, so the two colours differ by more than colour.</p>
+    <label class="switch"><input type="checkbox" id="contrast"> High-contrast colours</label>
+    <button class="primary" type="button" data-close autofocus>Play</button>
+  </div>
+</dialog>
+
+<dialog id="stats" aria-labelledby="stats-title">
+  <div class="sheet">
+    <button class="close" type="button" data-close aria-label="Close">✕</button>
+    <h2 id="stats-title">Your stats</h2>
+    <div id="stats-body"></div>
+  </div>
+</dialog>
+
+<script src="puzzles.js"></script>
+<script src="logic.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

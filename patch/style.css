@@ -1,0 +1,282 @@
+/* Patch. Custom properties are prefixed pt- so a host page's own variables cannot collide. */
+:root {
+  --pt-bg: #f6f2ea;
+  --pt-ink: #221d16;
+  --pt-muted: #675e52;
+  --pt-card: #fffdf8;
+  --pt-line: #e0d8c9;
+  --pt-blank: #eee8db;
+  --pt-accent: #a84b24;
+  --pt-accent-ink: #fff;
+  /* The garden. Beds stay light in every mode, so the marks on them are the same everywhere. */
+  --pt-edge: #16130f;
+  --pt-grid: rgba(22, 19, 15, .16);
+  --pt-cross: #16130f;
+  --pt-soil: #3b2513;
+  --pt-clash: #7c160e;
+  --pt-clash-ink: #fff;
+  --pt-pat: rgba(22, 19, 15, .1);
+  --pt-bed-0: #feaeb7;
+  --pt-bed-1: #ffcf9b;
+  --pt-bed-2: #f6efa0;
+  --pt-bed-3: #afe4b5;
+  --pt-bed-4: #a7d5f4;
+  --pt-bed-5: #cbbaee;
+  --pt-bed-6: #cda58a;
+  --pt-bed-7: #f4f3f0;
+  --pt-shadow: 0 1px 2px rgba(34, 29, 22, .06), 0 10px 28px rgba(34, 29, 22, .1);
+  --pt-font: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --pt-edge-w: 1.5px;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --pt-bg: #15120e;
+    --pt-ink: #efe9df;
+    --pt-muted: #a89d8e;
+    --pt-card: #201b15;
+    --pt-line: #3a3229;
+    --pt-blank: #2b251e;
+    --pt-accent: #e8956a;
+    --pt-accent-ink: #1b0f08;
+    --pt-edge: #0c0a07;
+    --pt-bed-0: #e48a93;
+    --pt-bed-1: #ecab6d;
+    --pt-bed-2: #ddd57d;
+    --pt-bed-3: #7fc489;
+    --pt-bed-4: #79b6de;
+    --pt-bed-5: #b096d9;
+    --pt-bed-6: #b68f75;
+    --pt-bed-7: #d9d7d4;
+    --pt-shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 28px rgba(0, 0, 0, .4);
+  }
+}
+/* High contrast: stronger bed colours, bolder patterns and edges. */
+:root[data-contrast="high"] {
+  --pt-bed-0: #ff8c93;
+  --pt-bed-1: #ffbb6a;
+  --pt-bed-2: #fff372;
+  --pt-bed-3: #73e087;
+  --pt-bed-4: #71bfff;
+  --pt-bed-5: #bf93f1;
+  --pt-bed-6: #c28e6b;
+  --pt-bed-7: #fcfcfc;
+  --pt-pat: rgba(22, 19, 15, .24);
+  --pt-grid: rgba(22, 19, 15, .3);
+  --pt-edge-w: 2px;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-contrast="high"] {
+    --pt-bed-0: #f8767e;
+    --pt-bed-1: #ffac52;
+    --pt-bed-2: #faed5f;
+    --pt-bed-3: #5fcc74;
+    --pt-bed-4: #59aff4;
+    --pt-bed-5: #ae7ee2;
+    --pt-bed-6: #b98562;
+    --pt-bed-7: #eeeeee;
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--pt-bg);
+  color: var(--pt-ink);
+  font-family: var(--pt-font);
+  line-height: 1.4;
+  -webkit-tap-highlight-color: transparent;
+}
+.app { max-width: 500px; margin: 0 auto; padding: 10px 14px 28px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+a { color: var(--pt-accent); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---- header */
+.bar { display: grid; grid-template-columns: 40px 1fr 40px; align-items: center; }
+.logo { margin: 0; text-align: center; font-size: 27px; font-weight: 800; letter-spacing: -.02em; }
+.logo b { color: var(--pt-accent); font-weight: 800; }
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--pt-line); background: var(--pt-card);
+  font-weight: 800; font-size: 17px; display: grid; place-items: center; padding: 0;
+}
+.icon-btn:hover { border-color: var(--pt-accent); }
+.rules { margin: 4px auto 12px; max-width: 26em; text-align: center; font-size: 15px; font-weight: 700; line-height: 1.35; text-wrap: balance; }
+
+.preview-bar {
+  display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 0 12px; padding: 6px 10px;
+  border: 1.5px dashed var(--pt-line); border-radius: 12px; font-size: 13px; color: var(--pt-muted);
+}
+.preview-bar[hidden] { display: none; }
+.preview-bar b { color: var(--pt-ink); min-width: 48px; text-align: center; }
+.preview-bar button { border: 1.5px solid var(--pt-line); background: var(--pt-card); border-radius: 8px; padding: 2px 9px; }
+
+/* ---- the day and the clock */
+#play[hidden] { display: none; }
+.meta { display: flex; justify-content: space-between; align-items: baseline; margin: 0 2px 6px; font-size: 14px; color: var(--pt-muted); font-weight: 600; }
+#day-tag b { color: var(--pt-ink); }
+.timer { font-variant-numeric: tabular-nums; font-weight: 800; color: var(--pt-ink); font-size: 16px; }
+.timer::before { content: "⏱ "; font-size: 13px; }
+
+/* ---- the garden: one grid of squares, beds told apart by colour, pattern and thick edges.
+   The rows are there for screen readers and take no part in the layout. */
+.garden {
+  --n: 5;
+  /* Each square is a whole number of pixels wide, so rows meet without hairline gaps. */
+  position: relative; container-type: inline-size; box-sizing: content-box; margin: 0 auto;
+  width: calc(100% - 6px); width: round(down, calc(100% - 6px), calc(var(--n) * 1px));
+  display: grid; grid-template-columns: repeat(var(--n), 1fr);
+  border: 3px solid var(--pt-edge); border-radius: 12px; overflow: hidden;
+  touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+}
+.row { display: contents; }
+.cell {
+  --t: 0px; --r: 0px; --b: 0px; --l: 0px; --edge: var(--pt-edge);
+  position: relative; aspect-ratio: 1; display: grid; place-items: center; min-width: 0;
+  background-color: var(--bed); cursor: pointer; outline: none;
+  box-shadow: inset 0 var(--t) 0 var(--edge), inset calc(-1 * var(--r)) 0 0 var(--edge),
+    inset 0 calc(-1 * var(--b)) 0 var(--edge), inset var(--l) 0 0 var(--edge), inset 0 0 0 .5px var(--pt-grid);
+  font-size: calc(100cqw / var(--n) * .4); line-height: 1;
+}
+.cell.et { --t: var(--pt-edge-w); }
+.cell.er { --r: var(--pt-edge-w); }
+.cell.eb { --b: var(--pt-edge-w); }
+.cell.el { --l: var(--pt-edge-w); }
+.cell:focus-visible::after { content: ""; position: absolute; inset: 3px; border-radius: 6px; outline: 3px solid var(--pt-accent); outline-offset: -1px; box-shadow: 0 0 0 5px var(--pt-card); z-index: 3; }
+/* Each colour has its own faint pattern too, so the beds differ by more than colour. */
+.c0 { --bed: var(--pt-bed-0); }
+.c1 { --bed: var(--pt-bed-1); background-image: radial-gradient(var(--pt-pat) 18%, transparent 21%); background-size: 25% 25%; }
+.c2 { --bed: var(--pt-bed-2); background-image: repeating-linear-gradient(45deg, var(--pt-pat) 0 1.5px, transparent 1.5px 7px); }
+.c3 { --bed: var(--pt-bed-3); background-image: repeating-linear-gradient(-45deg, var(--pt-pat) 0 1.5px, transparent 1.5px 7px); }
+.c4 { --bed: var(--pt-bed-4); background-image: repeating-linear-gradient(0deg, var(--pt-pat) 0 1.5px, transparent 1.5px 6px); }
+.c5 { --bed: var(--pt-bed-5); background-image: repeating-linear-gradient(90deg, var(--pt-pat) 0 1.5px, transparent 1.5px 6px); }
+.c6 { --bed: var(--pt-bed-6); background-image: linear-gradient(var(--pt-pat) 1.5px, transparent 1.5px), linear-gradient(90deg, var(--pt-pat) 1.5px, transparent 1.5px); background-size: 25% 25%; }
+.c7 { --bed: var(--pt-bed-7); background-image: repeating-linear-gradient(45deg, var(--pt-pat) 0 1.5px, transparent 1.5px 11px), repeating-linear-gradient(-45deg, var(--pt-pat) 0 1.5px, transparent 1.5px 11px); }
+
+/* What a square holds: nothing, a ✕, or a seedling in a disc of soil. */
+.cell .x { color: var(--pt-cross); font-weight: 600; font-size: .95em; opacity: .85; }
+.cell .soil {
+  position: relative; width: 70%; height: 70%; border-radius: 50%; display: grid; place-items: center;
+  background: var(--pt-soil); font-size: 1.35em; box-shadow: 0 1px 0 rgba(0, 0, 0, .25);
+}
+.cell .soil span { transform: translateY(-4%); }
+.cell.pop .soil { animation: pt-pop .22s ease-out; }
+/* A seedling that breaks a rule: a red disc with a "!" badge, so colour is not the only sign. */
+.cell.clash .soil { background: var(--pt-clash); }
+.cell.clash .soil::after {
+  content: "!"; position: absolute; top: -8%; right: -10%; width: 42%; height: 42%; border-radius: 50%;
+  display: grid; place-items: center; background: var(--pt-clash-ink); color: var(--pt-clash); font-size: .5em; font-weight: 900;
+  box-shadow: 0 0 0 1.5px var(--pt-clash);
+}
+/* A bed with more than one seedling gets a thick red edge. */
+.cell.bad { --edge: var(--pt-clash); }
+.cell.bad.et { --t: 3px; } .cell.bad.er { --r: 3px; } .cell.bad.eb { --b: 3px; } .cell.bad.el { --l: 3px; }
+/* A row or column with more than one seedling is outlined. */
+.line-bad {
+  position: absolute; z-index: 2; pointer-events: none; border: 3px solid var(--pt-clash); border-radius: 6px;
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, .7), inset 0 0 0 1.5px rgba(255, 255, 255, .7);
+}
+/* On a first visit, a faint ✕ pulses in a square that can be ruled out straight away. */
+.cell.clue::before {
+  content: "✕"; position: absolute; inset: 10%; border-radius: 50%; display: grid; place-items: center;
+  border: 2.5px dashed var(--pt-accent); color: var(--pt-accent); font-weight: 700; animation: pt-pulse 1.4s ease-in-out infinite;
+}
+.cell.hinted .soil { animation: pt-hint .9s ease-out; }
+/* Solved: the seedlings bloom out of their soil and the ✕ marks fade away. */
+.garden.done .cell { cursor: default; }
+.garden.done .soil { background: transparent; box-shadow: none; font-size: 1.6em; }
+.garden.done .x { opacity: 0; transition: opacity .4s ease; }
+.garden.done .soil span { animation: pt-bloom .5s cubic-bezier(.3, 1.6, .5, 1) both; animation-delay: calc(var(--k, 0) * 90ms); }
+
+@keyframes pt-pop { from { transform: scale(.6); } to { transform: scale(1); } }
+/* Colour only, so the pulse is painted in place rather than on a layer of its own, which
+   could leave hairline seams between rows of squares. */
+@keyframes pt-pulse { 0%, 100% { color: transparent; border-color: transparent; } 50% { color: var(--pt-accent); border-color: var(--pt-accent); } }
+@keyframes pt-hint { 0% { box-shadow: 0 0 0 0 var(--pt-accent); } 100% { box-shadow: 0 0 0 14px transparent; } }
+@keyframes pt-bloom { 0% { transform: scale(.3) rotate(-25deg); } 100% { transform: scale(1.12); } }
+@keyframes pt-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.status { margin: 10px 0 0; min-height: 21px; text-wrap: balance; text-align: center; font-size: 14px; font-weight: 600; color: var(--pt-muted); }
+.status.bad { color: var(--pt-ink); }
+.status .tip, .status .more { display: block; }
+.status .tip { color: var(--pt-accent); }
+.status.bad::before { content: "! "; color: var(--pt-clash); font-weight: 900; }
+.tools { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+.tools[hidden] { display: none; }
+.tool {
+  padding: 11px 6px; border-radius: 14px; border: 1.5px solid var(--pt-line); background: var(--pt-card);
+  font-size: 15px; font-weight: 700; white-space: nowrap;
+}
+.tool:hover:not(:disabled) { border-color: var(--pt-accent); }
+.tool:disabled { opacity: .45; cursor: default; }
+
+.primary { width: 100%; padding: 13px 16px; border: 0; border-radius: 14px; background: var(--pt-accent); color: var(--pt-accent-ink); font-size: 16px; font-weight: 800; }
+.primary[hidden] { display: none; }
+.primary:hover { filter: brightness(1.06); }
+
+/* ---- results */
+.results { margin-top: 14px; padding: 18px 16px; background: var(--pt-card); border: 1.5px solid var(--pt-line); border-radius: 18px; box-shadow: var(--pt-shadow); animation: pt-fade .4s ease both; }
+.results[hidden] { display: none; }
+.score-head { display: flex; align-items: center; gap: 14px; }
+.score { font-size: 48px; font-weight: 800; line-height: 1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.score-title { margin: 0; font-size: 22px; line-height: 1.15; }
+.score-sub { margin: 2px 0 0; font-size: 14px; color: var(--pt-muted); }
+.pb { margin: 4px 0 0; font-size: 14px; font-weight: 800; color: var(--pt-accent); }
+.actions { display: flex; gap: 8px; margin-top: 16px; }
+.actions .primary { flex: 1; width: auto; }
+.secondary { padding: 13px 16px; border-radius: 14px; border: 1.5px solid var(--pt-line); background: transparent; font-weight: 700; }
+.share-text { margin: 12px 0 0; padding: 10px 12px; border-radius: 12px; border: 1.5px dashed var(--pt-line); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 14px; line-height: 1.25; white-space: pre-wrap; user-select: all; -webkit-user-select: all; }
+.share-text[hidden] { display: none; }
+.streak { margin: 14px 0 -6px; text-align: center; font-weight: 800; }
+.next { margin: 14px 0 0; text-align: center; font-size: 14px; color: var(--pt-muted); }
+.next b { color: var(--pt-ink); font-variant-numeric: tabular-nums; }
+.next button { margin-left: 6px; }
+.chip-btn { border: 1.5px solid var(--pt-line); background: var(--pt-card); border-radius: 999px; padding: 4px 12px; font-size: 13px; font-weight: 700; }
+.sheet h3 { margin: 20px 0 8px; font-size: 13px; letter-spacing: .05em; text-transform: uppercase; color: var(--pt-muted); }
+.notice { margin: 14px 0 0; text-align: center; font-size: 13px; color: var(--pt-muted); }
+.notice[hidden] { display: none; }
+.foot { margin-top: 22px; text-align: center; font-size: 12px; color: var(--pt-muted); }
+
+/* ---- toast */
+.toast {
+  position: fixed; left: 50%; top: 18px; z-index: 50; transform: translate(-50%, -160%); opacity: 0;
+  padding: 10px 16px; border-radius: 999px; background: var(--pt-ink); color: var(--pt-bg); font-weight: 700; font-size: 14px;
+  transition: transform .25s ease, opacity .25s ease; pointer-events: none; max-width: calc(100% - 32px); text-align: center;
+}
+.toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+/* ---- dialogs */
+dialog { width: min(440px, calc(100% - 24px)); padding: 0; border: 0; border-radius: 20px; background: var(--pt-card); color: var(--pt-ink); box-shadow: var(--pt-shadow); }
+dialog::backdrop { background: rgba(20, 14, 8, .55); }
+.sheet { position: relative; padding: 20px 18px 18px; }
+.sheet h2 { margin: 0 0 8px; font-size: 22px; }
+.sheet p { margin: 10px 0; font-size: 15px; }
+.sheet .fine { font-size: 13px; color: var(--pt-muted); }
+.sheet .primary { margin-top: 12px; }
+.close { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 50%; border: 0; background: var(--pt-blank); font-weight: 800; }
+.switch { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 14px; font-weight: 600; }
+.switch input { width: 18px; height: 18px; accent-color: var(--pt-accent); }
+.nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 12px 0 4px; text-align: center; }
+.nums b { display: block; font-size: 26px; font-variant-numeric: tabular-nums; }
+.nums span { font-size: 12px; color: var(--pt-muted); font-weight: 600; }
+.times { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+.times th, .times td { padding: 7px 4px; text-align: right; border-top: 1.5px solid var(--pt-line); }
+.times th:first-child, .times td:first-child { text-align: left; }
+.times thead th { border-top: 0; font-size: 12px; color: var(--pt-muted); font-weight: 700; }
+.times tr.today td { font-weight: 800; }
+
+@media (max-width: 380px) {
+  .app { padding-left: 10px; padding-right: 10px; }
+  .rules { font-size: 14px; }
+  .tool { font-size: 14px; }
+  .score { font-size: 42px; }
+}
+@media (min-width: 700px) {
+  .app { padding-top: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .results { animation: none; }
+  .cell.pop .soil, .cell.hinted .soil, .garden.done .soil span, .cell.clue::before { animation: none; }
+  .toast, .garden.done .x { transition: none; }
+}

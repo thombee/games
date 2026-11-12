@@ -1,0 +1,259 @@
+/* Molehill. Custom properties are prefixed mh- so a host page's own variables cannot collide. */
+:root {
+  --mh-bg: #f4f1e8;
+  --mh-ink: #1f1c26;
+  --mh-muted: #5f5a68;
+  --mh-card: #fffdf7;
+  --mh-line: #dcd6c8;
+  --mh-blank: #ece7dc;
+  --mh-accent: #6a45b8;
+  --mh-accent-ink: #fff;
+  /* The lawn. Grass and soil stay light in every mode, so the numbers on them read the same everywhere. */
+  --mh-edge: #3f6b2e;
+  --mh-grass: #9bd27c;
+  --mh-grass-alt: #8cc86c;
+  --mh-soil: #efe2c8;
+  --mh-soil-alt: #e8d9bc;
+  --mh-woke: #f3b3a2;
+  --mh-ring: #5a2fb0;
+  --mh-cross: #8c1d12;
+  --mh-cross-ink: #fff;
+  --mh-n1: #1f4fb5;
+  --mh-n2: #185b22;
+  --mh-n3: #9e2116;
+  --mh-n4: #4f2a99;
+  --mh-n5: #7d2410;
+  --mh-n6: #0a5656;
+  --mh-n7: #222222;
+  --mh-n8: #4d4d4d;
+  --mh-shadow: 0 1px 2px rgba(31, 28, 38, .06), 0 10px 28px rgba(31, 28, 38, .1);
+  --mh-font: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --mh-bg: #14131a;
+    --mh-ink: #ece9f2;
+    --mh-muted: #a29cae;
+    --mh-card: #1e1c26;
+    --mh-line: #34303f;
+    --mh-blank: #2a2733;
+    --mh-accent: #b9a0f2;
+    --mh-accent-ink: #1a1030;
+    --mh-edge: #1d3315;
+    --mh-grass: #84bd65;
+    --mh-grass-alt: #78b25a;
+    --mh-soil: #e6d8bc;
+    --mh-soil-alt: #e0d0b2;
+    --mh-shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 28px rgba(0, 0, 0, .4);
+  }
+}
+/* High contrast: grass and soil further apart, darker numbers, a heavier edge. */
+:root[data-contrast="high"] {
+  --mh-grass: #6fbf45;
+  --mh-grass-alt: #63b13b;
+  --mh-soil: #fff6e2;
+  --mh-soil-alt: #fbefd6;
+  --mh-edge: #14240d;
+  --mh-n1: #0a3aa8;
+  --mh-n2: #0b5a18;
+  --mh-n3: #9a1408;
+  --mh-n4: #3f1886;
+  --mh-n5: #631a06;
+  --mh-n6: #034f4f;
+  --mh-n7: #000000;
+  --mh-n8: #333333;
+}
+
+* { box-sizing: border-box; }
+/* No double-tap zoom anywhere on the page; pinch zoom still works. */
+html { -webkit-text-size-adjust: 100%; touch-action: manipulation; }
+body {
+  margin: 0;
+  background: var(--mh-bg);
+  color: var(--mh-ink);
+  font-family: var(--mh-font);
+  line-height: 1.4;
+  -webkit-tap-highlight-color: transparent;
+}
+.app { max-width: 500px; margin: 0 auto; padding: 10px 14px 28px; }
+button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; }
+a { color: var(--mh-accent); }
+[hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---- header */
+.bar { display: grid; grid-template-columns: 40px 1fr 40px; align-items: center; }
+.logo { margin: 0; text-align: center; font-size: 27px; font-weight: 800; letter-spacing: -.02em; }
+.logo b { color: var(--mh-accent); font-weight: 800; }
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--mh-line); background: var(--mh-card);
+  font-weight: 800; font-size: 17px; display: grid; place-items: center; padding: 0;
+}
+.icon-btn:hover { border-color: var(--mh-accent); }
+.tagline { margin: 2px 0 12px; text-align: center; color: var(--mh-muted); font-size: 15px; font-weight: 700; }
+
+.preview-bar {
+  display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 0 12px; padding: 6px 10px;
+  border: 1.5px dashed var(--mh-line); border-radius: 12px; font-size: 13px; color: var(--mh-muted);
+}
+.preview-bar b { color: var(--mh-ink); min-width: 48px; text-align: center; }
+.preview-bar button { border: 1.5px solid var(--mh-line); background: var(--mh-card); border-radius: 8px; padding: 2px 9px; }
+.preview-bar button:disabled { opacity: .4; cursor: default; }
+
+/* ---- the guided lawn's coach */
+.coach { margin: 0 0 12px; padding: 12px 14px; border-radius: 16px; background: var(--mh-card); border: 2px solid var(--mh-accent); box-shadow: var(--mh-shadow); }
+.coach-head { display: flex; align-items: center; justify-content: space-between; margin: 0 0 4px; font-size: 13px; color: var(--mh-accent); text-transform: uppercase; letter-spacing: .05em; }
+.coach-text { margin: 0; font-size: 15px; font-weight: 600; line-height: 1.4; }
+.coach .primary { margin-top: 10px; }
+
+/* ---- the day, moles left and the clock */
+.meta { display: flex; align-items: baseline; gap: 12px; margin: 0 2px 6px; font-size: 14px; color: var(--mh-muted); font-weight: 600; }
+#day-tag { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#day-tag b { color: var(--mh-ink); }
+.left { font-weight: 800; color: var(--mh-ink); font-variant-numeric: tabular-nums; font-size: 16px; }
+.timer { font-variant-numeric: tabular-nums; font-weight: 800; color: var(--mh-ink); font-size: 16px; }
+.timer::before { content: "⏱ "; font-size: 13px; }
+
+/* ---- the lawn: a checkerboard of mown grass; dug squares are soil with their number.
+   The rows are there for screen readers and take no part in the layout. */
+.lawn {
+  --w: 7; --h: 7;
+  position: relative; container-type: inline-size; box-sizing: content-box; margin: 0 auto;
+  /* Each square is a whole number of pixels wide, so rows meet without hairline gaps, and no
+     bigger than 52px on a wide screen. */
+  width: min(calc(100% - 4px), calc(var(--w) * 52px));
+  width: min(round(down, calc(100% - 4px), calc(var(--w) * 1px)), calc(var(--w) * 52px));
+  display: grid; grid-template-columns: repeat(var(--w), 1fr);
+  border: 2px solid var(--mh-edge); border-radius: 10px; overflow: hidden; background: var(--mh-edge);
+  touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+}
+.row { display: contents; }
+.cell {
+  position: relative; aspect-ratio: 1; display: grid; place-items: center; min-width: 0;
+  background: var(--mh-grass); cursor: pointer; outline: none;
+  font-size: calc(100cqw / var(--w) * .6); line-height: 1; font-weight: 900;
+}
+.cell.alt { background: var(--mh-grass-alt); }
+.cell.grass { box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, .3), inset 0 -1.5px 0 rgba(0, 0, 0, .1); }
+.lawn.marking .cell.grass { cursor: cell; }
+.cell.dug, .cell.asleep { background: var(--mh-soil); cursor: default; }
+.cell.dug.alt, .cell.asleep.alt { background: var(--mh-soil-alt); }
+.cell.dug.n1, .cell.dug.n2, .cell.dug.n3, .cell.dug.n4, .cell.dug.n5, .cell.dug.n6, .cell.dug.n7, .cell.dug.n8 { cursor: pointer; }
+.cell.woke { background: var(--mh-woke); }
+.sq { display: grid; place-items: center; width: 100%; height: 100%; position: relative; }
+.n1 { color: var(--mh-n1); } .n2 { color: var(--mh-n2); } .n3 { color: var(--mh-n3); } .n4 { color: var(--mh-n4); }
+.n5 { color: var(--mh-n5); } .n6 { color: var(--mh-n6); } .n7 { color: var(--mh-n7); } .n8 { color: var(--mh-n8); }
+.cell:focus-visible::after { content: ""; position: absolute; inset: 2px; border-radius: 5px; outline: 3px solid var(--mh-ring); outline-offset: -1px; box-shadow: 0 0 0 4px #fff; z-index: 3; }
+
+.flower { font-size: .95em; line-height: 1; filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .25)); }
+/* A daisy with no mole under it, shown once the game is over: a ✕ badge, not colour alone. */
+.nope, .badge { position: absolute; display: grid; place-items: center; border-radius: 50%; line-height: 1; }
+.nope { right: 4%; top: 4%; width: 42%; height: 42%; background: var(--mh-cross); color: var(--mh-cross-ink); font-size: .42em; box-shadow: 0 0 0 1.5px var(--mh-cross-ink); }
+.badge { right: 0; top: 0; width: 46%; height: 46%; font-size: .5em; }
+.mole { width: 86%; height: 86%; overflow: visible; }
+.zz { position: absolute; right: 6%; top: 0; font-size: .38em; font-weight: 900; color: var(--mh-n4); }
+.snooze .zz { animation: mh-zz 2.4s ease-in-out infinite; }
+.woke .mole { animation: mh-pop .5s cubic-bezier(.3, 1.7, .5, 1) both; }
+.woke .eyes { transform-origin: 20px 19px; animation: mh-blink 1.6s ease-in-out .5s infinite; }
+.cell.buzz .sq { animation: mh-buzz .22s linear; }
+
+/* A hint: the square it is about pulses, and the number that proves it gets a ring. */
+.cell.hinted::before, .cell.target::before {
+  content: ""; position: absolute; inset: 8%; border-radius: 50%; border: 3px dashed var(--mh-ring); z-index: 2; pointer-events: none;
+  animation: mh-pulse 1.3s ease-in-out infinite;
+}
+.cell.hinted::before { border-style: solid; }
+.cell.proof::before { content: ""; position: absolute; inset: 6%; border-radius: 30%; border: 3px solid var(--mh-ring); z-index: 2; pointer-events: none; }
+
+.lawn.over .cell { cursor: default; }
+
+@keyframes mh-pop { 0% { transform: translateY(55%) scale(.6); } 100% { transform: none; } }
+@keyframes mh-blink { 0%, 86%, 100% { transform: scaleY(1); } 92% { transform: scaleY(.1); } }
+@keyframes mh-zz { 0%, 100% { transform: translate(0, 10%); opacity: .4; } 50% { transform: translate(15%, -25%); opacity: 1; } }
+@keyframes mh-buzz { 0%, 100% { transform: none; } 25% { transform: translateX(-7%) rotate(-6deg); } 75% { transform: translateX(7%) rotate(6deg); } }
+@keyframes mh-pulse { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+@keyframes mh-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* ---- under the lawn: the Dig/Mark switch and the hint */
+.controls { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 12px; }
+.mode { display: grid; grid-template-columns: 1fr 1fr; padding: 3px; border-radius: 15px; background: var(--mh-blank); border: 1.5px solid var(--mh-line); }
+.mode button { padding: 9px 6px; border: 0; border-radius: 12px; background: transparent; font-size: 15px; font-weight: 800; color: var(--mh-muted); white-space: nowrap; }
+.mode button[aria-pressed="true"] { background: var(--mh-accent); color: var(--mh-accent-ink); box-shadow: 0 1px 3px rgba(0, 0, 0, .2); }
+.tool {
+  padding: 11px 14px; border-radius: 14px; border: 1.5px solid var(--mh-line); background: var(--mh-card);
+  font-size: 15px; font-weight: 700; white-space: nowrap;
+}
+.tool:hover { border-color: var(--mh-accent); }
+.status { margin: 10px 0 0; min-height: 21px; text-wrap: balance; text-align: center; font-size: 14px; font-weight: 600; color: var(--mh-muted); }
+.status.said { color: var(--mh-ink); }
+
+.primary { width: 100%; padding: 13px 16px; border: 0; border-radius: 14px; background: var(--mh-accent); color: var(--mh-accent-ink); font-size: 16px; font-weight: 800; }
+.primary:hover { filter: brightness(1.06); }
+
+/* ---- results */
+.results { margin-top: 14px; padding: 18px 16px; background: var(--mh-card); border: 1.5px solid var(--mh-line); border-radius: 18px; box-shadow: var(--mh-shadow); animation: mh-fade .4s ease both; }
+.score-head { display: flex; align-items: center; gap: 14px; }
+.score { font-size: 48px; font-weight: 800; line-height: 1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.score-title { margin: 0; font-size: 22px; line-height: 1.15; }
+.score-sub { margin: 2px 0 0; font-size: 14px; color: var(--mh-muted); }
+.actions { display: flex; gap: 8px; margin-top: 16px; }
+.actions .primary { flex: 1; width: auto; }
+.secondary { padding: 13px 16px; border-radius: 14px; border: 1.5px solid var(--mh-line); background: transparent; font-weight: 700; }
+.secondary.wide { display: block; width: 100%; margin-top: 8px; }
+.share-text { margin: 12px 0 0; padding: 10px 12px; border-radius: 12px; border: 1.5px dashed var(--mh-line); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 14px; line-height: 1.25; white-space: pre-wrap; user-select: all; -webkit-user-select: all; }
+.streak { margin: 14px 0 -6px; text-align: center; font-weight: 800; }
+.next { margin: 14px 0 0; text-align: center; font-size: 14px; color: var(--mh-muted); }
+.next b { color: var(--mh-ink); font-variant-numeric: tabular-nums; }
+.next button { margin-left: 6px; }
+.chip-btn { border: 1.5px solid var(--mh-line); background: var(--mh-card); border-radius: 999px; padding: 4px 12px; font-size: 13px; font-weight: 700; text-transform: none; letter-spacing: 0; color: var(--mh-ink); }
+.sheet h3 { margin: 20px 0 8px; font-size: 13px; letter-spacing: .05em; text-transform: uppercase; color: var(--mh-muted); }
+.notice { margin: 14px 0 0; text-align: center; font-size: 13px; color: var(--mh-muted); }
+.foot { margin-top: 22px; text-align: center; font-size: 12px; color: var(--mh-muted); }
+
+/* ---- toast */
+.toast {
+  position: fixed; left: 50%; top: 18px; z-index: 50; transform: translate(-50%, -160%); opacity: 0;
+  padding: 10px 16px; border-radius: 999px; background: var(--mh-ink); color: var(--mh-bg); font-weight: 700; font-size: 14px;
+  transition: transform .25s ease, opacity .25s ease; pointer-events: none; max-width: calc(100% - 32px); text-align: center;
+}
+.toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+/* ---- dialogs */
+dialog { width: min(440px, calc(100% - 24px)); padding: 0; border: 0; border-radius: 20px; background: var(--mh-card); color: var(--mh-ink); box-shadow: var(--mh-shadow); }
+dialog::backdrop { background: rgba(16, 12, 24, .55); }
+.sheet { position: relative; padding: 20px 18px 18px; }
+.sheet h2 { margin: 0 0 8px; font-size: 22px; }
+.sheet p { margin: 10px 0; font-size: 15px; }
+.sheet .fine { font-size: 13px; color: var(--mh-muted); }
+.sheet .primary { margin-top: 12px; }
+.close { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 50%; border: 0; background: var(--mh-blank); font-weight: 800; }
+.switch { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 14px; font-weight: 600; }
+.switch input { width: 18px; height: 18px; accent-color: var(--mh-accent); }
+.nums { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 12px 0 4px; text-align: center; }
+.nums b { display: block; font-size: 26px; font-variant-numeric: tabular-nums; }
+.nums span { font-size: 12px; color: var(--mh-muted); font-weight: 600; }
+.times { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+.times th, .times td { padding: 6px 4px; text-align: right; border-top: 1.5px solid var(--mh-line); }
+.times th:first-child, .times td:first-child { text-align: left; }
+.times thead th { border-top: 0; font-size: 12px; color: var(--mh-muted); font-weight: 700; }
+.times tr.today td { font-weight: 800; }
+
+@media (max-width: 380px) {
+  .app { padding-left: 8px; padding-right: 8px; }
+  .tagline { font-size: 14px; }
+  .meta { font-size: 13px; }
+  .mode button, .tool { font-size: 14px; }
+  .tool { padding-left: 10px; padding-right: 10px; }
+  .score { font-size: 40px; }
+}
+@media (min-width: 700px) {
+  .app { padding-top: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .results { animation: none; }
+  .woke .mole, .woke .eyes, .snooze .zz, .cell.hinted::before, .cell.target::before { animation: none; }
+  /* The long-press buzz still shows, as a flash of the ring instead of a wiggle. */
+  .cell.buzz .sq { animation: none; box-shadow: inset 0 0 0 3px var(--mh-ring); border-radius: 4px; }
+  .toast { transition: none; }
+}
