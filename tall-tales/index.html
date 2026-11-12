@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tall Tales: true, or a tall tale?</title>
+<meta name="description" content="Seven surprising claims about the natural world. Swipe right if it's true, left if it's a tall tale.">
+<meta property="og:title" content="Tall Tales">
+<meta property="og:description" content="True, or a tall tale? Seven cards a day about animals, plants, the body, Earth and space.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#f6f2ea" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15121b" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🃏%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+<div class="app">
+  <header class="bar">
+    <button class="icon-btn" id="help-btn" type="button" aria-label="How to play">?</button>
+    <h1 class="logo"><span aria-hidden="true">🃏</span> Tall <b>Tales</b></h1>
+    <button class="icon-btn" id="stats-btn" type="button" aria-label="Your stats">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 20V11M12 20V4M19 20v-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+    </button>
+  </header>
+  <p class="tagline">True, or a tall tale? <span id="day-tag"></span></p>
+
+  <div class="preview-bar" id="preview-bar" hidden>
+    <span>Preview</span>
+    <button type="button" id="prev-day" aria-label="Previous day">◀</button>
+    <b id="preview-day"></b>
+    <button type="button" id="next-day" aria-label="Next day">▶</button>
+    <span>nothing is saved</span>
+  </div>
+
+  <ol class="dots" id="dots" aria-label="Today's seven cards"></ol>
+
+  <section id="play" aria-label="Today's cards">
+    <div class="stack" id="stack">
+      <div class="stack-back" aria-hidden="true"></div>
+      <div class="stack-back" aria-hidden="true"></div>
+      <div class="card" id="card" tabindex="-1" role="group" aria-labelledby="card-pos claim">
+        <div class="card-inner" id="card-inner">
+          <div class="face front" id="front">
+            <span class="sr-only" id="card-pos"></span>
+            <span class="kind" id="kind"></span>
+            <span class="c-emoji" id="emoji" aria-hidden="true"></span>
+            <p class="claim" id="claim"></p>
+            <span class="stamp stamp-true" aria-hidden="true">✓ True</span>
+            <span class="stamp stamp-tall" aria-hidden="true">✕ Tall tale</span>
+          </div>
+          <div class="face back" id="back" aria-hidden="true">
+            <p class="answer" id="answer"></p>
+            <p class="outcome" id="outcome"></p>
+            <p class="explain" id="explain"></p>
+            <a class="source" id="source" target="_blank" rel="noopener"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="hint" id="hint" hidden>Swipe right <span class="arr" aria-hidden="true">→</span> if it's true, left <span class="arr" aria-hidden="true">←</span> if it's a tall tale</p>
+    <div class="controls">
+      <div class="choices" id="choices">
+        <button class="choice tall" id="tall-btn" type="button"><span aria-hidden="true">✕</span> Tall tale</button>
+        <button class="choice true" id="true-btn" type="button"><span aria-hidden="true">✓</span> True</button>
+      </div>
+      <button class="primary" id="next-btn" type="button" hidden>Next</button>
+    </div>
+  </section>
+
+  <section class="results" id="results" aria-label="Your result" hidden></section>
+
+  <p class="notice" id="storage-note" hidden>Your progress can't be saved in this browser.</p>
+  <footer class="foot">Every answer links to the source that settles it.</footer>
+</div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="sr-only" id="live" aria-live="polite"></div>
+
+<dialog id="help" aria-labelledby="help-title">
+  <div class="sheet">
+    <button class="close" type="button" data-close aria-label="Close">✕</button>
+    <h2 id="help-title">How to play</h2>
+    <p>Each card makes a claim about the natural world. Swipe right, or tap <b>✓ True</b>, if you think it's true. Swipe left, or tap <b>✕ Tall tale</b>, if you think it's made up.</p>
+    <p>The card then turns over to show the answer and where it comes from.</p>
+    <p>There are seven cards a day, the same for everyone, and new ones arrive at midnight.</p>
+    <p class="fine">On a keyboard, the right arrow says True and the left arrow says Tall tale.</p>
+    <label class="switch"><input type="checkbox" id="contrast"> High-contrast colours</label>
+    <button class="primary" type="button" data-close autofocus>Play</button>
+  </div>
+</dialog>
+
+<dialog id="stats" aria-labelledby="stats-title">
+  <div class="sheet">
+    <button class="close" type="button" data-close aria-label="Close">✕</button>
+    <h2 id="stats-title">Your stats</h2>
+    <div id="stats-body"></div>
+  </div>
+</dialog>
+
+<script src="cards.js"></script>
+<script src="logic.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
