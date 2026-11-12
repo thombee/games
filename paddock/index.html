@@ -31,6 +31,12 @@
   </div>
 
   <p class="arrival" id="arrival" hidden></p>
+  <section class="moment" id="moment" hidden aria-labelledby="moment-title">
+    <p class="m-kicker">A moment in the paddock</p>
+    <h2 id="moment-title"></h2>
+    <div id="moment-lines"></div>
+    <button class="secondary" type="button" id="moment-done">Lovely</button>
+  </section>
   <p class="hint" id="hint"></p>
 
   <section class="paddock" id="paddock" data-time="morning" aria-label="The paddock">
@@ -66,6 +72,7 @@
     </div>
     <div class="friend" id="visit-friend"></div>
     <div id="visit-body"></div>
+    <div class="sr-only" id="visit-live" aria-live="polite"></div>
   </div>
 </dialog>
 
@@ -99,6 +106,7 @@
 </dialog>
 
 <script src="animals.js"></script>
+<script src="moments.js"></script>
 <script src="facts.js"></script>
 <script src="logic.js"></script>
 <script src="app.js"></script>
